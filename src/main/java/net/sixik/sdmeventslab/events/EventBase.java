@@ -4,6 +4,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.sixik.sdmeventslab.events.conditions.AbstractEventCondition;
 import net.sixik.sdmeventslab.events.conditions.EventCondition;
+import net.sixik.sdmeventslab.events.endConditions.DayEndCondition;
+import net.sixik.sdmeventslab.events.endConditions.EventEndCondition;
 import net.sixik.sdmeventslab.events.function.EventFunction;
 
 import java.util.ArrayList;
@@ -19,6 +21,9 @@ public class EventBase {
     protected final List<AbstractEventCondition> conditions = new ArrayList<>();
     protected final List<EventCondition> conditions2 = new ArrayList<>();
     protected final List<EventFunction> functions = new ArrayList<>();
+    private final List<EventEndCondition> endConditions = new ArrayList<>();
+
+    public long dayStart = 0;
 
     public EventBase(ResourceLocation eventID) {
         this.eventID = eventID;
@@ -50,8 +55,14 @@ public class EventBase {
         return functions;
     }
 
-    public void onEventStart(MinecraftServer server) {
+    public List<EventEndCondition> getEndConditions() {
+        if(endConditions.isEmpty())
+            return List.of(new DayEndCondition(1).setEventBase(this));
+        return endConditions;
+    }
 
+    public void onEventStart(MinecraftServer server) {
+        dayStart = server.overworld().getDayTime() / 24000;
         isActive = true;
 
     }
@@ -65,5 +76,10 @@ public class EventBase {
     public enum EventSide {
         GLOBAL, // Происходит в мире для всех игроков
         LOCAL   // Происходит в мире локально для игрока
+    }
+
+    protected static class EventPropertyFunction extends EventFunction {
+
+
     }
 }

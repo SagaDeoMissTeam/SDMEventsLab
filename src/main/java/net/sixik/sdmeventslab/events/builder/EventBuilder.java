@@ -52,29 +52,29 @@ public class EventBuilder {
     }
 
     public EventBuilder addBiomeCondition(ResourceLocation biomeID) {
-        eventBase.getConditions2().add(new BiomeCondition(biomeID));
+        eventBase.getConditions2().add(new BiomeCondition(biomeID).setEvent(eventBase));
         return this;
     }
 
     public EventBuilder addDimensionCondition(ResourceLocation dimensionID) {
-        eventBase.getConditions2().add(new DimensionCondition(dimensionID));
+        eventBase.getConditions2().add(new DimensionCondition(dimensionID).setEvent(eventBase));
         return this;
     }
 
     public EventBuilder addWeatherCondition(WeatherCondition.WeatherType type) {
-        eventBase.getConditions2().add(new WeatherCondition(type));
+        eventBase.getConditions2().add(new WeatherCondition(type).setEvent(eventBase));
         return this;
     }
 
     public EventBuilder addPlayerOnlineCondition(int countPlayers, EventCondition.ConditionType type) {
-        eventBase.getConditions2().add(new PlayerOnlineCondition(countPlayers, type));
+        eventBase.getConditions2().add(new PlayerOnlineCondition(countPlayers, type).setEvent(eventBase));
         return this;
     }
 
     public EventBase create() {
 
-        eventConditions.stream().map(ConditionBuilder::create).forEach(eventBase.getConditions2()::add);
-        eventFunctions.stream().map(FunctionBuilder::create).forEach(eventBase.getFunctions()::add);
+        eventConditions.stream().map(ConditionBuilder::create).map(s -> s.setEvent(eventBase)).forEach(eventBase.getConditions2()::add);
+        eventFunctions.stream().map(FunctionBuilder::create).map(s -> s.setEvent(eventBase)).forEach(eventBase.getFunctions()::add);
 
         return EventsRegisters.registerEvent(eventBase);
     }

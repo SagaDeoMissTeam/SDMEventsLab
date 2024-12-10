@@ -2,8 +2,15 @@ package net.sixik.sdmeventslab.events.conditions;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.sixik.sdmeventslab.events.EventBase;
 
 public class EventCondition {
+    public EventBase eventBase;
+
+    public final EventCondition setEvent(EventBase event) {
+        this.eventBase = event;
+        return this;
+    }
 
     public boolean canExecuteGlobal(MinecraftServer server) {
         return true;
@@ -13,7 +20,7 @@ public class EventCondition {
         return true;
     }
 
-    public final long getDay(MinecraftServer server) {
+    protected final long getDay(MinecraftServer server) {
         return server.overworld().getDayTime() / 24000;
     }
 
