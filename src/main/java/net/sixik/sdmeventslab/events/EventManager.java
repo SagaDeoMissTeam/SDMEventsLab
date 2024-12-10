@@ -1,6 +1,5 @@
 package net.sixik.sdmeventslab.events;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.sixik.sdmeventslab.register.EventsRegisters;
 

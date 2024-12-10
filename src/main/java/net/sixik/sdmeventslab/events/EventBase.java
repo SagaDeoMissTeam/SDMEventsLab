@@ -2,11 +2,15 @@ package net.sixik.sdmeventslab.events;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.sixik.sdmeventslab.events.conditions.AbstractEventCondition;
 import net.sixik.sdmeventslab.events.conditions.EventCondition;
 import net.sixik.sdmeventslab.events.endConditions.DayEndCondition;
 import net.sixik.sdmeventslab.events.endConditions.EventEndCondition;
 import net.sixik.sdmeventslab.events.function.EventFunction;
+import net.sixik.sdmeventslab.events.renders.EventRender;
+import net.sixik.sdmeventslab.network.client.SendEndEventS2C;
+import net.sixik.sdmeventslab.network.client.SendStartEventS2C;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +20,14 @@ public class EventBase {
     protected final EventSide eventSide;
     protected final ResourceLocation eventID;
     public final EventProperty properties = new EventProperty();
+    public final EventRenderProperty renderProperty = new EventRenderProperty();
     public boolean isActive = false;
     //Список условий при которых ивент может произойти
     protected final List<AbstractEventCondition> conditions = new ArrayList<>();
     protected final List<EventCondition> conditions2 = new ArrayList<>();
     protected final List<EventFunction> functions = new ArrayList<>();
     private final List<EventEndCondition> endConditions = new ArrayList<>();
+    private final List<EventRender> eventRenders = new ArrayList<>();
 
     public long dayStart = 0;
 
@@ -55,6 +61,10 @@ public class EventBase {
         return functions;
     }
 
+    public List<EventRender> getEventRenders() {
+        return eventRenders;
+    }
+
     public List<EventEndCondition> getEndConditions() {
         if(endConditions.isEmpty())
             return List.of(new DayEndCondition(1).setEventBase(this));
@@ -65,11 +75,28 @@ public class EventBase {
         dayStart = server.overworld().getDayTime() / 24000;
         isActive = true;
 
+        switch (eventSide) {
+            case LOCAL -> {
+                for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                    new SendStartEventS2C(this.eventID.toString()).sendTo(player);
+                }
+            }
+            case GLOBAL -> new SendStartEventS2C(this.eventID.toString()).sendToAll(server);
+        }
+
     }
     public void onEventEnd(MinecraftServer server) {
 
         isActive = false;
 
+        switch (eventSide) {
+            case LOCAL -> {
+                for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                    new SendEndEventS2C(this.eventID.toString()).sendTo(player);
+                }
+            }
+            case GLOBAL -> new SendEndEventS2C(this.eventID.toString()).sendToAll(server);
+        }
     }
     public void onEventTick(MinecraftServer server) {}
 
