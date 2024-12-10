@@ -3,6 +3,8 @@ package net.sixik.sdmeventslab.events;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.sixik.sdmeventslab.events.conditions.AbstractEventCondition;
+import net.sixik.sdmeventslab.events.conditions.EventCondition;
+import net.sixik.sdmeventslab.events.function.EventFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,8 @@ public class EventBase {
     public boolean isActive = false;
     //Список условий при которых ивент может произойти
     protected final List<AbstractEventCondition> conditions = new ArrayList<>();
+    protected final List<EventCondition> conditions2 = new ArrayList<>();
+    protected final List<EventFunction> functions = new ArrayList<>();
 
     public EventBase(ResourceLocation eventID) {
         this.eventID = eventID;
@@ -36,6 +40,14 @@ public class EventBase {
 
     public List<AbstractEventCondition> getConditions() {
         return conditions;
+    }
+  
+    public List<EventCondition> getConditions2() {
+        return conditions2;
+    }
+
+    public List<EventFunction> getFunctions() {
+        return functions;
     }
 
     public void onEventStart(MinecraftServer server) {

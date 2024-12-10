@@ -14,6 +14,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.sixik.sdmeventslab.events.EventBase;
 import net.sixik.sdmeventslab.events.EventManager;
+import net.sixik.sdmeventslab.events.conditions.AbstractEventCondition;
 import net.sixik.sdmeventslab.network.SDMEventsLabNetwork;
 import net.sixik.sdmeventslab.register.EventsRegisters;
 import org.slf4j.Logger;

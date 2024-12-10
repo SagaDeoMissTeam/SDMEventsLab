@@ -20,5 +20,4 @@ public abstract class AbstractEventCondition {
     public abstract boolean canExecuteGlobal(MinecraftServer server);
 
     public abstract boolean canExecuteLocal(ServerPlayer player);
-
 }
