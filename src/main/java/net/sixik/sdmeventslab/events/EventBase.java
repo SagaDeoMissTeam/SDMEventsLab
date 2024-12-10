@@ -1,7 +1,7 @@
 package net.sixik.sdmeventslab.events;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.sixik.sdmeventslab.events.conditions.AbstractEventCondition;
 
 import java.util.ArrayList;
@@ -11,7 +11,8 @@ public class EventBase {
 
     protected final EventSide eventSide;
     protected final ResourceLocation eventID;
-
+    public final EventProperty properties = new EventProperty();
+    public boolean isActive = false;
     //Список условий при которых ивент может произойти
     protected final List<AbstractEventCondition> conditions = new ArrayList<>();
 
@@ -36,6 +37,18 @@ public class EventBase {
     public List<AbstractEventCondition> getConditions() {
         return conditions;
     }
+
+    public void onEventStart(MinecraftServer server) {
+
+        isActive = true;
+
+    }
+    public void onEventEnd(MinecraftServer server) {
+
+        isActive = false;
+
+    }
+    public void onEventTick(MinecraftServer server) {}
 
     public enum EventSide {
         GLOBAL, // Происходит в мире для всех игроков
