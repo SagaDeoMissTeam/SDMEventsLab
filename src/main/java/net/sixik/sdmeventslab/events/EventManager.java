@@ -1,6 +1,5 @@
 package net.sixik.sdmeventslab.events;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.sixik.sdmeventslab.events.conditions.EventCondition;
