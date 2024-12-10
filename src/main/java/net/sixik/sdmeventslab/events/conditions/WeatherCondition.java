@@ -1,6 +1,7 @@
 package net.sixik.sdmeventslab.events.conditions;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 public class WeatherCondition extends EventCondition{
@@ -13,22 +14,7 @@ public class WeatherCondition extends EventCondition{
 
     @Override
     public boolean canExecuteGlobal(MinecraftServer server) {
-
-        switch (type) {
-            case THUNDER ->
-            {
-                return server.overworld().isThundering();
-            }
-            case RAIN -> {
-                return server.overworld().isRaining();
-            }
-            case NONE -> {
-                return !server.overworld().isRaining() && !server.overworld().isThundering();
-            }
-            default -> {
-                return true;
-            }
-        }
+        return type.isSuccess(server.overworld());
     }
 
     @Override
@@ -39,6 +25,15 @@ public class WeatherCondition extends EventCondition{
     public enum WeatherType {
         THUNDER,
         RAIN,
-        NONE
+        NONE;
+
+        public boolean isSuccess(ServerLevel level) {
+            return switch (this) {
+                case THUNDER -> level.isThundering();
+                case RAIN -> level.isRaining();
+                case NONE -> !level.isRaining() && !level.isThundering();
+                default -> false;
+            };
+        }
     }
 }

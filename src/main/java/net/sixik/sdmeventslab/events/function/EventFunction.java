@@ -6,8 +6,17 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.sixik.sdmeventslab.events.EventBase;
 
 public class EventFunction {
+
+    public EventBase eventBase;
+    public FunctionStage functionStage = FunctionStage.TICK;
+
+    public final EventFunction setEvent(EventBase event) {
+        this.eventBase = event;
+        return this;
+    }
 
     public void onEventStart(MinecraftServer server) {}
     public void onEventEnd(MinecraftServer server) {}
@@ -21,4 +30,10 @@ public class EventFunction {
 
     public void resetEffectFromPlayers(ServerPlayer player) {}
 
+
+    public enum FunctionStage {
+        START,
+        END,
+        TICK
+    }
 }
