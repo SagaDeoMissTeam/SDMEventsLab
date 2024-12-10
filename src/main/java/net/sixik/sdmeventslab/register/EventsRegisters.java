@@ -28,6 +28,11 @@ public class EventsRegisters {
         return condition;
     }
 
+    public static HashMap<ResourceLocation, EventBase> getEvents(){
+
+        return EVENTS_MAP;
+    }
+
     @Nullable
     public static AbstractEventCondition getCondition(ResourceLocation conditionID) {
         return CONDITION_HASH_MAP.get(conditionID);
