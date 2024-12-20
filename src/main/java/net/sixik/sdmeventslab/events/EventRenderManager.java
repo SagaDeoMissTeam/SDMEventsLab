@@ -1,6 +1,7 @@
 package net.sixik.sdmeventslab.events;
 
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGuiEvent;
@@ -19,6 +20,8 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(modid = SDMEventsLab.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class EventRenderManager {
+
+    public static List<EventBase> currentsEvents = new ArrayList<>();
 
     public static List<RenderStruct> renderList = new ArrayList<>();
     public static LinkedList<RenderLogoStruct> logoRender = new LinkedList<>();

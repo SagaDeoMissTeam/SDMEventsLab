@@ -17,9 +17,11 @@ public class EventRenderLogo extends EventRender{
     public TextureColor texture;
     public int renderTime = 400;
 
-    public EventRenderLogo(EventBase eventBase) {
+
+    @Override
+    public void setEventBase(EventBase eventBase) {
         this.eventBase = eventBase;
-        this.texture = TextureColor.create(new ResourceLocation(eventBase.getEventID().getNamespace() + "textures/events/" + eventBase.getEventID().getPath() + ".png"));
+        this.texture = TextureColor.create(new ResourceLocation(eventBase.getEventID().getNamespace() + ":textures/events/" + eventBase.getEventID().getPath() + ".png"));
     }
 
     @Override

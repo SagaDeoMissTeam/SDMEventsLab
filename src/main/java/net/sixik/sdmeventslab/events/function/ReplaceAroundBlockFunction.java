@@ -1,20 +1,28 @@
 package net.sixik.sdmeventslab.events.function;
 
+import com.blamejared.crafttweaker.api.annotation.ZenRegister;
+import com.blamejared.crafttweaker_annotations.annotations.Document;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.TickEvent;
 import org.jetbrains.annotations.Nullable;
+import org.openzen.zencode.java.ZenCodeType;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+@ZenRegister
+@Document("mods/eventslab/functions/ReplaceAroundBlockFunction")
+@ZenCodeType.Name("mods.eventslab.functions.ReplaceAroundBlockFunction")
 public class ReplaceAroundBlockFunction extends EventFunction {
 
     protected final int size;
     protected final Function<BlockState, @Nullable BlockState> predicate;
 
+    @ZenCodeType.Constructor
     public ReplaceAroundBlockFunction(int size, Function<BlockState, @Nullable BlockState> predicate) {
         this.size = size;
         this.predicate = predicate;
@@ -41,9 +49,9 @@ public class ReplaceAroundBlockFunction extends EventFunction {
                             for (int dz = z - size; dz <= z + size; dz++) {
 
                                 BlockState block = predicate.apply(level.getBlockState(new BlockPos(dx, dy, dz)));
-                                if(block != null) {
-                                    level.setBlockAndUpdate(new BlockPos(dx, dy, dz), block);
-                                }
+                                if(block == null) block = Blocks.AIR.defaultBlockState();
+
+                                level.setBlockAndUpdate(new BlockPos(dx, dy, dz), block);
                             }
                         }
                     }

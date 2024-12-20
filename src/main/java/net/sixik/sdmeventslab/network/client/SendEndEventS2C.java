@@ -49,5 +49,8 @@ public class SendEndEventS2C extends BaseS2CMessage {
         }
 
         EventRenderManager.renderList.removeIf(render -> render.eventName.equals(eventName));
+        EventRenderManager.logoRender.removeIf(render -> render.eventName.equals(eventName));
+
+        EventRenderManager.currentsEvents.removeIf(s -> s.getEventID().toString().equals(eventName));
     }
 }

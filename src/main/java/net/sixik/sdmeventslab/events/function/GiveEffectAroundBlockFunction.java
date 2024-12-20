@@ -1,19 +1,26 @@
 package net.sixik.sdmeventslab.events.function;
 
+import com.blamejared.crafttweaker.api.annotation.ZenRegister;
+import com.blamejared.crafttweaker_annotations.annotations.Document;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.TickEvent;
+import org.openzen.zencode.java.ZenCodeType;
 
 import java.util.function.Function;
 
+@ZenRegister
+@Document("mods/eventslab/functions/GiveEffectAroundBlockFunction")
+@ZenCodeType.Name("mods.eventslab.functions.GiveEffectAroundBlockFunction")
 public class GiveEffectAroundBlockFunction extends EventFunction{
 
     protected final Function<BlockState, MobEffectInstance> predicate;
     protected final int radius;
 
+    @ZenCodeType.Constructor
     public GiveEffectAroundBlockFunction(int radius, Function<BlockState, MobEffectInstance> predicate) {
         this.predicate = predicate;
         this.radius = radius;

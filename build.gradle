@@ -134,6 +134,10 @@ repositories {
     maven {
         url "https://cursemaven.com"
     }
+    maven {
+        url = 'https://maven.blamejared.com'
+        name = 'BlameJared Maven'
+    }
 }
 
 dependencies {
@@ -142,12 +146,26 @@ dependencies {
     // The "userdev" classifier will be requested and setup by ForgeGradle.
     // If the group id is "net.minecraft" and the artifact id is one of ["client", "server", "joined"],
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    def minVer = "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    def ctDep = ("curse.maven:crafttweaker-239197:5880672")
+
+    minecraft minVer;
+
+    compileOnly(ctDep)
+    runtimeOnly(fg.deobf(ctDep))
+
 
     implementation fg.deobf("curse.maven:sdm-engine-core-964997:5761090")
     implementation fg.deobf("curse.maven:sdm-ui-lib-1095061:5808289")
     implementation fg.deobf("curse.maven:architectury-api-419699:5137938")
-    implementation fg.deobf("curse.maven:crafttweaker-239197:5880672")
+
+    implementation fg.deobf("curse.maven:curios-309927:5843594")
+    implementation fg.deobf("curse.maven:botania-225643:5594997")
+    implementation fg.deobf("curse.maven:patchouli-306770:4966125")
+
+    implementation fg.deobf("curse.maven:glitchcore-955399:5787839")
+    implementation fg.deobf("curse.maven:serene-seasons-291874:5790653")
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
@@ -164,6 +182,12 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    annotationProcessor ctDep
+    annotationProcessor minVer
+    annotationProcessor 'com.blamejared.crafttweaker:Crafttweaker_Annotation_Processors:3.0.0.10'
+
+    implementation fg.deobf("curse.maven:kubejs-238086:5853326")
+    implementation fg.deobf("curse.maven:rhino-416294:5655836")
 
 }
 
@@ -203,4 +227,8 @@ tasks.named('jar', Jar).configure {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+compileJava {
+    options.compilerArgs << "-Acrafttweaker.processor.document.output_directory=${file(mod_id.toLowerCase())}"
 }

@@ -1,9 +1,15 @@
 package net.sixik.sdmeventslab.events.conditions;
 
+import com.blamejared.crafttweaker.api.annotation.ZenRegister;
+import com.blamejared.crafttweaker_annotations.annotations.Document;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.sixik.sdmeventslab.events.EventBase;
+import org.openzen.zencode.java.ZenCodeType;
 
+@ZenRegister
+@Document("mods/eventslab/conditions/EventCondition")
+@ZenCodeType.Name("mods.eventslab.conditions.EventCondition")
 public class EventCondition {
     public EventBase eventBase;
 

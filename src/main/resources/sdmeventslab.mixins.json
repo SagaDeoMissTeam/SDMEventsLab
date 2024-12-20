@@ -5,8 +5,17 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "sdmeventslab.refmap.json",
   "mixins": [
+    "BiomeMixin",
+    "EntityMixin",
+    "LivingEntityMixin",
+    "MobMixin",
+    "ServerLevelMixin",
+    "block.CropBlockMixin",
+    "integration.botania.ManaPoolBlockEntityMixin"
   ],
   "client": [
+    "EntityRenderDispatcherMixin",
+    "client.LevelRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

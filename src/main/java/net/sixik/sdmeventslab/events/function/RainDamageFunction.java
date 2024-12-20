@@ -1,15 +1,22 @@
 package net.sixik.sdmeventslab.events.function;
 
+import com.blamejared.crafttweaker.api.annotation.ZenRegister;
+import com.blamejared.crafttweaker_annotations.annotations.Document;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.TickEvent;
 import net.sixik.sdmeventslab.events.conditions.WeatherCondition;
+import org.openzen.zencode.java.ZenCodeType;
 
+@ZenRegister
+@Document("mods/eventslab/functions/RainDamageFunction")
+@ZenCodeType.Name("mods.eventslab.functions.RainDamageFunction")
 public class RainDamageFunction extends EventFunction{
 
     protected final float damage;
     protected final int damageDelay;
     protected final WeatherCondition.WeatherType type;
 
+    @ZenCodeType.Constructor
     public RainDamageFunction(float damage, WeatherCondition.WeatherType type) {
         this.damage = damage;
         this.type = type;

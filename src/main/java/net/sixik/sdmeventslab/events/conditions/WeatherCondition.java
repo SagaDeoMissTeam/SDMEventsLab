@@ -1,13 +1,21 @@
 package net.sixik.sdmeventslab.events.conditions;
 
+import com.blamejared.crafttweaker.api.annotation.ZenRegister;
+import com.blamejared.crafttweaker_annotations.annotations.BracketEnum;
+import com.blamejared.crafttweaker_annotations.annotations.Document;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import org.openzen.zencode.java.ZenCodeType;
 
+@ZenRegister
+@Document("mods/eventslab/conditions/PlayerOnlineCondition")
+@ZenCodeType.Name("mods.eventslab.conditions.PlayerOnlineCondition")
 public class WeatherCondition extends EventCondition{
 
     private final WeatherType type;
 
+    @ZenCodeType.Constructor
     public WeatherCondition(WeatherType type) {
         this.type = type;
     }
@@ -22,6 +30,10 @@ public class WeatherCondition extends EventCondition{
         return canExecuteGlobal(player.server);
     }
 
+    @ZenRegister
+    @Document("mods/eventslab/conditions/WeatherType")
+    @ZenCodeType.Name("mods.eventslab.conditions.WeatherType")
+    @BracketEnum("eventslab:weather")
     public enum WeatherType {
         THUNDER,
         RAIN,
