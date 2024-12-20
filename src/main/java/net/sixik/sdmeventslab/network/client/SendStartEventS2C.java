@@ -54,9 +54,13 @@ public class SendStartEventS2C extends BaseS2CMessage {
             eventRender.resetRender();
             if(eventRender instanceof EventRenderLogo renderLogo) {
                 EventRenderManager.logoRender.add(new EventRenderManager.RenderLogoStruct(renderLogo, eventName));
+                if(eventBase.renderProperty.isRenderTitleInScreenAfterLogo)
+                    EventRenderManager.renderList.add(new EventRenderManager.RenderStruct(renderLogo, eventName));
             } else {
                 EventRenderManager.renderList.add(new EventRenderManager.RenderStruct(eventRender, eventName));
             }
+
+            EventRenderManager.currentsEvents.add(eventBase);
         }
     }
 }

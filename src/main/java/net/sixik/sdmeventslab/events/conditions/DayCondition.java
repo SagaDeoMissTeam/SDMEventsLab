@@ -1,13 +1,20 @@
 package net.sixik.sdmeventslab.events.conditions;
 
+import com.blamejared.crafttweaker.api.annotation.ZenRegister;
+import com.blamejared.crafttweaker_annotations.annotations.Document;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import org.openzen.zencode.java.ZenCodeType;
 
+@ZenRegister
+@Document("mods/eventslab/conditions/DayCondition")
+@ZenCodeType.Name("mods.eventslab.conditions.DayCondition")
 public class DayCondition extends EventCondition{
 
     public long day;
     public ConditionType conditionType;
 
+    @ZenCodeType.Constructor
     public DayCondition(long day, ConditionType conditionType) {
         this.day = day;
         this.conditionType = conditionType;

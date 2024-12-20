@@ -1,13 +1,19 @@
 package net.sixik.sdmeventslab.events.function;
 
+import com.blamejared.crafttweaker.api.annotation.ZenRegister;
+import com.blamejared.crafttweaker_annotations.annotations.Document;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import org.openzen.zencode.java.ZenCodeType;
 
 import java.util.UUID;
 
+@ZenRegister
+@Document("mods/eventslab/functions/GiveAttributeFunction")
+@ZenCodeType.Name("mods.eventslab.functions.GiveAttributeFunction")
 public class GiveAttributeFunction extends EventFunction{
 
     protected final UUID attributeID;
@@ -15,6 +21,7 @@ public class GiveAttributeFunction extends EventFunction{
     protected final double value;
     protected final AttributeModifier.Operation operation;
 
+    @ZenCodeType.Constructor
     public GiveAttributeFunction(UUID attributeID, Attribute attribute, double value, AttributeModifier.Operation operation) {
         this.attributeID = attributeID;
         this.attribute = attribute;

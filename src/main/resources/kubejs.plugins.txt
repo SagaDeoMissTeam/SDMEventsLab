@@ -1,0 +1,1 @@
+net.sixik.sdmeventslab.compact.kubejs.KJSPlugin
