@@ -1,7 +1,6 @@
-package net.sixik.sdmeventslab.events;
+package net.sixik.sdmeventslab.events.function;
 
 import net.minecraft.util.RandomSource;
-import net.sixik.sdmeventslab.events.function.EventFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

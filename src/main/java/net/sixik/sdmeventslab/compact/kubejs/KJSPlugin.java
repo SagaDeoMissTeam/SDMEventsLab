@@ -15,7 +15,7 @@ public class KJSPlugin extends KubeJSPlugin {
     public void registerBindings(BindingsEvent event) {
         if(event.getType().isStartup()) {
             event.add("EventBuilder", EventBuilder.class);
-            event.add("EventFunctionBuilder", EventFunctionBuilder.class);
+            event.add("EventFunctionBuilder", EventCustomFunctionBuilder.class);
             event.add("EventConditionBuilder", EventConditionBuilder.class);
             event.add("EventEndCondition", EventEndCondition.class);
             event.add("EventRenderBuilder", EventRenderBuilder.class);

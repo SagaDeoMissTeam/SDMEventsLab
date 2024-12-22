@@ -1,4 +1,4 @@
-package net.sixik.sdmeventslab.events;
+package net.sixik.sdmeventslab.events.property;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -6,7 +6,7 @@ import net.minecraft.world.entity.EntityType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventProperty {
+public class EventGlobalProperty {
 
     public List<ResourceLocation> blackListBlocksWherePlayerCanStay = new ArrayList<>();
 

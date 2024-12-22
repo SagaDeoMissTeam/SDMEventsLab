@@ -11,6 +11,7 @@ import net.sixik.sdmeventslab.events.endConditions.DayEndCondition;
 import net.sixik.sdmeventslab.events.endConditions.EventEndCondition;
 import net.sixik.sdmeventslab.events.function.CustomFunction;
 import net.sixik.sdmeventslab.events.function.EventFunction;
+import net.sixik.sdmeventslab.events.property.*;
 import net.sixik.sdmeventslab.events.renders.EventRender;
 import net.sixik.sdmeventslab.network.client.SendEndEventS2C;
 import net.sixik.sdmeventslab.network.client.SendStartEventS2C;
@@ -24,14 +25,19 @@ import java.util.*;
 @ZenCodeType.Name("mods.eventslab.EventBase")
 public class EventBase {
 
-    protected final EventSide eventSide;
-    protected final ResourceLocation eventID;
-    public EventProperty properties = new EventProperty();
+    public final EventSide eventSide;
+    public final ResourceLocation eventID;
+    public EventGlobalProperty properties = new EventGlobalProperty();
     public EventRenderProperty renderProperty = new EventRenderProperty();
+
+    protected final List<EventBiomeProperty> biomeProperties = new ArrayList<>();
+    protected final List<EventDimensionProperty> dimensionProperties = new ArrayList<>();
+    protected final List<EventStructureProperty> structureProperties = new ArrayList<>();
     protected final List<EventCondition> conditions = new ArrayList<>();
     protected final List<EventFunction> functions = new ArrayList<>();
-    private final List<EventEndCondition> endConditions = new ArrayList<>();
-    private final List<EventRender> eventRenders = new ArrayList<>();
+
+    protected final List<EventEndCondition> endConditions = new ArrayList<>();
+    protected final List<EventRender> eventRenders = new ArrayList<>();
 
     public final Map<String, ResourceLocation> eventsIcons = new HashMap<>();
 
@@ -70,6 +76,10 @@ public class EventBase {
 
     public List<EventFunction> getFunctions() {
         return functions;
+    }
+
+    public List<EventStructureProperty> getStructureProperties() {
+        return structureProperties;
     }
 
     public List<EventRender> getEventRenders() {

@@ -3,7 +3,7 @@ package net.sixik.sdmeventslab.mixin;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.sixik.sdmeventslab.events.EventBase;
-import net.sixik.sdmeventslab.events.EventManager;
+import net.sixik.sdmeventslab.events.managers.EventManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;

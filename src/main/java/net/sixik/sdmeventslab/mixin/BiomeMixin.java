@@ -2,13 +2,12 @@ package net.sixik.sdmeventslab.mixin;
 
 import net.minecraft.world.level.biome.Biome;
 import net.sixik.sdmeventslab.events.EventBase;
-import net.sixik.sdmeventslab.events.EventRenderManager;
+import net.sixik.sdmeventslab.events.managers.EventRenderManager;
 import net.sixik.sdmeventslab.events.renders.EventRender;
 import net.sixik.sdmeventslab.events.renders.level.biome.EventFogColorRender;
 import net.sixik.sdmeventslab.events.renders.level.biome.EventWaterColorRender;
 import net.sixik.sdmeventslab.events.renders.level.biome.EventWaterFogColorRender;
 import net.sixik.sdmeventslab.events.renders.level.sky.EventSkyColorRender;
-import net.sixik.sdmeventslab.events.renders.level.sun.EventSunSizeRender;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

@@ -1,6 +1,7 @@
-package net.sixik.sdmeventslab.events;
+package net.sixik.sdmeventslab.events.managers;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.*;
@@ -11,6 +12,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.sixik.sdmeventslab.SDMEventsLab;
 import net.sixik.sdmeventslab.api.ActiveEventData;
 import net.sixik.sdmeventslab.api.IEventHistory;
+import net.sixik.sdmeventslab.events.EventBase;
+import net.sixik.sdmeventslab.events.EventManagerConfig;
+import net.sixik.sdmeventslab.events.property.EventStructureProperty;
 import net.sixik.sdmeventslab.events.function.EventFunction;
 import net.sixik.sdmeventslab.network.client.SendEndEventS2C;
 import net.sixik.sdmeventslab.register.EventsRegisters;
@@ -44,11 +48,26 @@ public class EventFunctionManager {
 
     @SubscribeEvent
     public void onEntitySpawnEvent(MobSpawnEvent.FinalizeSpawn event) {
-        for (EventBase startedGlobalEvent : EventManager.INSTANCE.startedGlobalEvents) {
-            for (EventFunction function : startedGlobalEvent.getFunctions()) {
-                function.onEntitySpawnEvent(event);
+
+        if(event.getEntity().level() instanceof ServerLevel level) {
+
+            for (EventBase startedGlobalEvent : EventManager.INSTANCE.startedGlobalEvents) {
+                for (EventFunction function : startedGlobalEvent.getFunctions()) {
+                    function.onEntitySpawnEvent(event);
+                }
+
+                for (EventStructureProperty structureProperty : startedGlobalEvent.getStructureProperties()) {
+                    if(structureProperty.inStructure(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : structureProperty.getFunctions()) {
+                            function.onEntitySpawnEvent(event);
+                        }
+                    }
+                }
             }
+
         }
+
     }
 
     @SubscribeEvent
@@ -61,6 +80,18 @@ public class EventFunctionManager {
                 function.onPlayerTickEvent(event);
             }
 
+            if(event.player instanceof ServerPlayer player) {
+
+                for (EventStructureProperty structureProperty : startedGlobalEvent.getStructureProperties()) {
+                    if (structureProperty.inStructure(player.blockPosition(), player.serverLevel())) {
+
+                        for (EventFunction function : structureProperty.getFunctions()) {
+                            function.onPlayerTickEvent(event);
+                        }
+                    }
+                }
+            }
+
             flag = startedGlobalEvent.properties.isPlayerCanStayOnSun;
         }
 
@@ -71,6 +102,18 @@ public class EventFunctionManager {
 
                 for (EventFunction function : base.getFunctions()) {
                     function.onPlayerTickEvent(event);
+                }
+
+                if(event.player instanceof ServerPlayer player) {
+
+                    for (EventStructureProperty structureProperty : base.getStructureProperties()) {
+                        if (structureProperty.inStructure(player.blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : structureProperty.getFunctions()) {
+                                function.onPlayerTickEvent(event);
+                            }
+                        }
+                    }
                 }
 
                 if(!flag)
@@ -91,6 +134,18 @@ public class EventFunctionManager {
             for (EventFunction function : startedGlobalEvent.getFunctions()) {
                 function.onLivingDeathEvent(event);
             }
+
+            if(event.getEntity().level() instanceof ServerLevel level) {
+
+                for (EventStructureProperty structureProperty : startedGlobalEvent.getStructureProperties()) {
+                    if (structureProperty.inStructure(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : structureProperty.getFunctions()) {
+                            function.onLivingDeathEvent(event);
+                        }
+                    }
+                }
+            }
         }
 
         if(event.getSource().getEntity() instanceof ServerPlayer player) {
@@ -101,6 +156,18 @@ public class EventFunctionManager {
                     for (EventFunction function : base.getFunctions()) {
                         function.onLivingDeathEvent(event);
                     }
+
+
+
+                    for (EventStructureProperty structureProperty : base.getStructureProperties()) {
+                        if (structureProperty.inStructure(player.blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : structureProperty.getFunctions()) {
+                                function.onLivingDeathEvent(event);
+                            }
+                        }
+                    }
+
                 }
             }
         }
@@ -141,6 +208,18 @@ public class EventFunctionManager {
             for (EventFunction function : startedGlobalEvent.getFunctions()) {
                 function.onEntityInteractEvent(event);
             }
+
+            if(event.getEntity().level() instanceof ServerLevel level) {
+
+                for (EventStructureProperty structureProperty : startedGlobalEvent.getStructureProperties()) {
+                    if (structureProperty.inStructure(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : structureProperty.getFunctions()) {
+                            function.onEntityInteractEvent(event);
+                        }
+                    }
+                }
+            }
         }
 
         if(event.getEntity() instanceof ServerPlayer player) {
@@ -150,6 +229,15 @@ public class EventFunctionManager {
                     if(base == null) continue;
                     for (EventFunction function : base.getFunctions()) {
                         function.onEntityInteractEvent(event);
+                    }
+
+                    for (EventStructureProperty structureProperty : base.getStructureProperties()) {
+                        if (structureProperty.inStructure(player.blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : structureProperty.getFunctions()) {
+                                function.onEntityInteractEvent(event);
+                            }
+                        }
                     }
                 }
             }
@@ -174,6 +262,18 @@ public class EventFunctionManager {
                 }
             }
 
+            if(event.getEntity().level() instanceof ServerLevel level) {
+
+                for (EventStructureProperty structureProperty : startedGlobalEvent.getStructureProperties()) {
+                    if (structureProperty.inStructure(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : structureProperty.getFunctions()) {
+                            function.onPlayerRespawnEvent(event);
+                        }
+                    }
+                }
+            }
+
         }
 
         if(EventManager.INSTANCE.startedGlobalEvents.isEmpty()) {
@@ -185,6 +285,28 @@ public class EventFunctionManager {
                 }
             }
         }
+
+        if(event.getEntity() instanceof IEventHistory eventHistory && event.getEntity().level() instanceof ServerLevel level) {
+            for (ActiveEventData activeEventData : eventHistory.sdm$getActivesEvents()) {
+                EventBase base = EventsRegisters.getEvent(activeEventData.eventID);
+                if(base == null) continue;
+                for (EventFunction function : base.getFunctions()) {
+                    function.onPlayerRespawnEvent(event);
+                }
+
+
+
+                for (EventStructureProperty structureProperty : base.getStructureProperties()) {
+                    if (structureProperty.inStructure(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : structureProperty.getFunctions()) {
+                            function.onPlayerRespawnEvent(event);
+                        }
+                    }
+                }
+
+            }
+        }
     }
 
     @SubscribeEvent
@@ -192,6 +314,40 @@ public class EventFunctionManager {
         for (EventBase startedGlobalEvent : EventManager.INSTANCE.startedGlobalEvents) {
             for (EventFunction function : startedGlobalEvent.getFunctions()) {
                 function.onPlayerItemPickupEvent(event);
+            }
+
+            if(event.getEntity().level() instanceof ServerLevel level) {
+
+                for (EventStructureProperty structureProperty : startedGlobalEvent.getStructureProperties()) {
+                    if (structureProperty.inStructure(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : structureProperty.getFunctions()) {
+                            function.onPlayerItemPickupEvent(event);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(event.getEntity() instanceof IEventHistory eventHistory && event.getEntity().level() instanceof ServerLevel level) {
+            for (ActiveEventData activeEventData : eventHistory.sdm$getActivesEvents()) {
+                EventBase base = EventsRegisters.getEvent(activeEventData.eventID);
+                if(base == null) continue;
+                for (EventFunction function : base.getFunctions()) {
+                    function.onPlayerItemPickupEvent(event);
+                }
+
+
+
+                for (EventStructureProperty structureProperty : base.getStructureProperties()) {
+                    if (structureProperty.inStructure(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : structureProperty.getFunctions()) {
+                            function.onPlayerItemPickupEvent(event);
+                        }
+                    }
+                }
+
             }
         }
     }
@@ -223,6 +379,18 @@ public class EventFunctionManager {
                     for (EventFunction function : startedGlobalEvent.getFunctions()) {
                         function.onLivingEntityTickEvent(event);
                     }
+
+                    if(event.getEntity().level() instanceof ServerLevel level) {
+
+                        for (EventStructureProperty structureProperty : startedGlobalEvent.getStructureProperties()) {
+                            if (structureProperty.inStructure(event.getEntity().blockPosition(), level)) {
+
+                                for (EventFunction function : structureProperty.getFunctions()) {
+                                    function.onLivingEntityTickEvent(event);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -236,6 +404,7 @@ public class EventFunctionManager {
         for (EventBase startedGlobalEvent : EventManager.INSTANCE.startedGlobalEvents) {
             startedGlobalEvent.sendNotify((ServerPlayer) event.getEntity());
         }
+
     }
 
     @SubscribeEvent
@@ -254,6 +423,18 @@ public class EventFunctionManager {
             for (EventFunction function : startedGlobalEvent.getFunctions()) {
                 function.onBlockBreakEvent(event);
             }
+
+            if(event.getPlayer().level() instanceof ServerLevel level) {
+
+                for (EventStructureProperty structureProperty : startedGlobalEvent.getStructureProperties()) {
+                    if (structureProperty.inStructure(event.getPlayer().blockPosition(), level)) {
+
+                        for (EventFunction function : structureProperty.getFunctions()) {
+                            function.onBlockBreakEvent(event);
+                        }
+                    }
+                }
+            }
         }
 
         if(event.getPlayer() instanceof ServerPlayer player) {
@@ -263,6 +444,15 @@ public class EventFunctionManager {
                     if(base == null) continue;
                     for (EventFunction function : base.getFunctions()) {
                         function.onBlockBreakEvent(event);
+                    }
+
+                    for (EventStructureProperty structureProperty : base.getStructureProperties()) {
+                        if (structureProperty.inStructure(player.blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : structureProperty.getFunctions()) {
+                                function.onBlockBreakEvent(event);
+                            }
+                        }
                     }
                 }
             }

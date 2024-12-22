@@ -4,7 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.sixik.sdmeventslab.events.EventBase;
-import net.sixik.sdmeventslab.events.EventManager;
+import net.sixik.sdmeventslab.events.managers.EventManager;
 import net.sixik.sdmeventslab.events.function.EventFunction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

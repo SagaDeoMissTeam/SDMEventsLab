@@ -6,7 +6,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.sixik.sdmeventslab.events.EventBase;
-import net.sixik.sdmeventslab.events.EventManager;
+import net.sixik.sdmeventslab.events.managers.EventManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

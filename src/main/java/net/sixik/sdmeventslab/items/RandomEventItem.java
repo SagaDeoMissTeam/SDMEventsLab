@@ -9,7 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.sixik.sdmeventslab.events.EventBase;
-import net.sixik.sdmeventslab.events.EventManager;
+import net.sixik.sdmeventslab.events.managers.EventManager;
 
 import java.util.Iterator;
 
