@@ -10,40 +10,23 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.TickEvent;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
-public class RandomAroundSpawnEntityFunction extends EventFunction{
+public class RandomAroundSpawnEntityWithCustomFunction extends RandomAroundSpawnEntityFunction{
 
-    protected final int minCount;
-    protected final int maxCount;
-    protected final EntityType<?> entityType;
-    protected final int timePerSpawn;
-    protected final int radius;
+    private final Consumer<Entity> consumer;
 
-    public RandomAroundSpawnEntityFunction(int minCount, int maxCount, int radius, EntityType<?> entityType) {
-        this.minCount = minCount;
-        this.maxCount = maxCount;
-        this.entityType = entityType;
-        this.timePerSpawn = 120;
-        this.radius = radius;
+    public RandomAroundSpawnEntityWithCustomFunction(int minCount, int maxCount, int radius, EntityType<?> entityType, Consumer<Entity> consumer) {
+        super(minCount, maxCount, radius, entityType);
+        this.consumer = consumer;
     }
 
-    public RandomAroundSpawnEntityFunction(int minCount, int maxCount, int radius, EntityType<?> entityType, int timePerSpawn) {
-        this.minCount = minCount;
-        this.maxCount = maxCount;
-        this.entityType = entityType;
-        this.timePerSpawn = timePerSpawn;
-        this.radius = radius;
+    public RandomAroundSpawnEntityWithCustomFunction(int minCount, int maxCount, int radius, EntityType<?> entityType, int timePerSpawn, Consumer<Entity> consumer) {
+        super(minCount, maxCount, radius, entityType, timePerSpawn);
+        this.consumer = consumer;
     }
 
     @Override
-    public void onPlayerTickEvent(TickEvent.PlayerTickEvent event) {
-        if(event.phase != TickEvent.Phase.START || event.player.level().isClientSide) return;
-
-        if(event.player.level().getGameTime() % timePerSpawn == 0) {
-            spawnMobsAroundPlayer(event.player, entityType, radius);
-        }
-    }
-
     public void spawnMobsAroundPlayer(Player player, EntityType<?> entityType, int radius) {
         Level level = player.level();
 
@@ -69,6 +52,7 @@ public class RandomAroundSpawnEntityFunction extends EventFunction{
                 if (mob != null) {
                     mob.setPos(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5);
                     serverLevel.addFreshEntity(mob);
+                    consumer.accept(mob);
                 }
             }
         }

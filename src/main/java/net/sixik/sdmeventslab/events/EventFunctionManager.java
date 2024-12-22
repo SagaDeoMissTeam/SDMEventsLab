@@ -6,6 +6,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.sixik.sdmeventslab.SDMEventsLab;
 import net.sixik.sdmeventslab.api.ActiveEventData;
@@ -206,13 +207,21 @@ public class EventFunctionManager {
 
     @SubscribeEvent
     public void onEntityTick(LivingEvent.LivingTickEvent event) {
+
         if(!event.getEntity().level().isClientSide && event.getEntity().getType().getCategory().isFriendly()) {
+
             if(event.getEntity().level().isDay()) {
+
                 for (EventBase startedGlobalEvent : EventManager.INSTANCE.startedGlobalEvents) {
+
                     if(!startedGlobalEvent.properties.canFriendlyStayOnSun) {
                         if (event.getEntity().level().canSeeSky(event.getEntity().blockPosition())) {
                             event.getEntity().setSecondsOnFire(8);
                         }
+                    }
+
+                    for (EventFunction function : startedGlobalEvent.getFunctions()) {
+                        function.onLivingEntityTickEvent(event);
                     }
                 }
             }
@@ -221,6 +230,7 @@ public class EventFunctionManager {
 
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+
         if(event.getEntity().level().isClientSide) return;
 
         for (EventBase startedGlobalEvent : EventManager.INSTANCE.startedGlobalEvents) {
@@ -230,10 +240,33 @@ public class EventFunctionManager {
 
     @SubscribeEvent
     public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+
         if(event.getEntity().level().isClientSide) return;
 
         for (Map.Entry<ResourceLocation, EventBase> resourceLocationEventBaseEntry : EventsRegisters.getEvents().entrySet()) {
             new SendEndEventS2C(resourceLocationEventBaseEntry.getKey().toString()).sendTo((ServerPlayer) event.getEntity());
         }
     }
+
+    @SubscribeEvent
+    public void onBlockBreakEvent(BlockEvent.BreakEvent event) {
+        for (EventBase startedGlobalEvent : EventManager.INSTANCE.startedGlobalEvents) {
+            for (EventFunction function : startedGlobalEvent.getFunctions()) {
+                function.onBlockBreakEvent(event);
+            }
+        }
+
+        if(event.getPlayer() instanceof ServerPlayer player) {
+            if(player instanceof IEventHistory eventHistory) {
+                for (ActiveEventData activeEventData : eventHistory.sdm$getActivesEvents()) {
+                    EventBase base = EventsRegisters.getEvent(activeEventData.eventID);
+                    if(base == null) continue;
+                    for (EventFunction function : base.getFunctions()) {
+                        function.onBlockBreakEvent(event);
+                    }
+                }
+            }
+        }
+    }
+
 }

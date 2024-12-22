@@ -2,28 +2,41 @@ package net.sixik.sdmeventslab.events.builder;
 
 import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.sixik.sdmeventslab.events.EventBase;
 import net.sixik.sdmeventslab.events.conditions.*;
 import net.sixik.sdmeventslab.events.endConditions.EventEndCondition;
 import net.sixik.sdmeventslab.events.function.*;
+import net.sixik.sdmeventslab.events.function.drops.CustomDropFromBlockFunction;
+import net.sixik.sdmeventslab.events.function.drops.CustomDropFromEntityFunction;
 import net.sixik.sdmeventslab.events.function.integration.botania.ManaCuriosGiveFunction;
 import net.sixik.sdmeventslab.events.function.integration.botania.ManaPoolGiveFunction;
+import net.sixik.sdmeventslab.events.function.misc.DamageTickFunction;
+import net.sixik.sdmeventslab.events.function.misc.PlaySoundFunction;
+import net.sixik.sdmeventslab.events.function.misc.PlaySoundPerTickFunction;
+import net.sixik.sdmeventslab.events.function.misc.SendMessageFunction;
 import net.sixik.sdmeventslab.register.EventsRegisters;
 import org.jetbrains.annotations.Nullable;
 import org.openzen.zencode.java.ZenCodeType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -33,12 +46,10 @@ import java.util.function.Function;
 @ZenCodeType.Name("mods.eventslab.builder.EventBuilder")
 public class EventBuilder {
 
-    @ZenCodeType.Method
     public static EventBuilder createEventString(String eventID, EventBase.EventSide eventSide) {
         return new EventBuilder(new ResourceLocation(eventID), eventSide);
     }
 
-    @ZenCodeType.Method
     public static EventBuilder createEventID(ResourceLocation eventID, EventBase.EventSide eventSide) {
         return new EventBuilder(eventID, eventSide);
     }
@@ -59,181 +70,220 @@ public class EventBuilder {
         eventBase = new EventBase(this.eventID, this.eventSide);
     }
 
-    @ZenCodeType.Method
     public EventBuilder addEventProperty(EventPropertyBuilder eventPropertyBuilder) {
         this.eventPropertyBuilder = eventPropertyBuilder;
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addRender(EventRenderBuilder renderBuilder) {
         eventRenderBuilder = renderBuilder;
         return this;
     }
 
-    @ZenCodeType.Method
-    public EventBuilder addEndCondition(String id, Consumer<CompoundTag> serializer, Consumer<CompoundTag> deserializer) {
-        eventEndConditions.add(new EventEndConditionBuilder(id, serializer, deserializer).create());
+    public EventBuilder addEndCondition(String id, Function<MinecraftServer, Boolean> consumer, Function<ServerPlayer, Boolean> consumer1) {
+        eventEndConditions.add(new EventEndConditionBuilder(id).addCanEndLocal(consumer1).addCanEndGlobal(consumer).create());
         return this;
     }
 
     //*****************************
     //              FUNCTIONS
     // *****************************//
-    @ZenCodeType.Method
     public EventBuilder addCustomFunction(EventFunctionBuilder eventFunction) {
         eventFunctions.add(eventFunction);
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addGiveAttributeFunction(UUID attributeID, Attribute attribute, double value, AttributeModifier.Operation operation) {
         eventBase.getFunctions().add(new GiveAttributeFunction(attributeID, attribute, value, operation));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addGiveEffectAroundBlockFunction(int radius, Function<BlockState, MobEffectInstance> predicate) {
         eventBase.getFunctions().add(new GiveEffectAroundBlockFunction(radius, predicate));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addGiveEffectFunction(MobEffectInstance effectInstance) {
         eventBase.getFunctions().add(new GiveEffectFunction(effectInstance));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addReplaceAroundBlockFunction(int size, Function<BlockState, @Nullable BlockState> predicate) {
         eventBase.getFunctions().add(new ReplaceAroundBlockFunction(size, predicate));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addRainDamageFunction(float damage, WeatherCondition.WeatherType type) {
         eventBase.getFunctions().add(new RainDamageFunction(damage, type));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addRainDamageFunction(float damage, int damageDelay, WeatherCondition.WeatherType type) {
         eventBase.getFunctions().add(new RainDamageFunction(damage, type, damageDelay));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addRainEffectFunction(MobEffectInstance effect, WeatherCondition.WeatherType type) {
         eventBase.getFunctions().add(new RainEffectFunction(effect, type));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addRainEffectFunction(MobEffectInstance effect, int checkEffectDelay, WeatherCondition.WeatherType type) {
         eventBase.getFunctions().add(new RainEffectFunction(effect, type, checkEffectDelay));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addReplaceAroundEntityFunction(int size, Function<Entity, EntityType<?>> predicate) {
         eventBase.getFunctions().add(new ReplaceAroundEntityFunction(size, predicate));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addReplaceBlockUnderPlayerFunction(Function<BlockState, @Nullable BlockState> predicate) {
         eventBase.getFunctions().add(new ReplaceBlockUnderPlayerFunction(predicate));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addSpawnReplaceFunction(EntityType<?> toReplaceEntity, EntityType<?>[] replacableTypes) {
         eventBase.getFunctions().add(new SpawnReplaceFunction(toReplaceEntity, replacableTypes));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addSpawnReplaceWithCustomFunction(EntityType<?> toReplaceEntity, EntityType<?>[] replacableTypes, BiConsumer<MobSpawnEvent.FinalizeSpawn, Entity> consumer) {
         eventBase.getFunctions().add(new SpawnReplaceWithCustomFunction(toReplaceEntity, replacableTypes, consumer));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addWaterDamageFunction(float damage) {
         eventBase.getFunctions().add(new WaterDamageFunction(damage));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addWaterDamageFunction(float damage, int damageDelay) {
         eventBase.getFunctions().add(new WaterDamageFunction(damage, damageDelay));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addWaterEffectFunction(MobEffectInstance effect) {
         eventBase.getFunctions().add(new WaterEffectFunction(effect));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addWaterEffectFunction(MobEffectInstance effect, int checkEffectDelay) {
         eventBase.getFunctions().add(new WaterEffectFunction(effect, checkEffectDelay));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addManaCuriosGiveFunction(int minMana, int maxMana) {
         eventBase.getFunctions().add(new ManaCuriosGiveFunction(minMana, maxMana));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addManaPoolGiveFunction(int minMana, int maxMana) {
         eventBase.getFunctions().add(new ManaPoolGiveFunction(minMana, maxMana));
+        return this;
+    }
+
+    public EventBuilder addRandomAroundSpawnEntityFunction(int minCount, int maxCount, int radius, EntityType<?> entityType) {
+        eventBase.getFunctions().add(new RandomAroundSpawnEntityFunction(minCount, maxCount, radius, entityType));
+        return this;
+    }
+
+    public EventBuilder addRandomAroundSpawnEntityFunction(int minCount, int maxCount, int radius, EntityType<?> entityType, int timePerSpawn) {
+        eventBase.getFunctions().add(new RandomAroundSpawnEntityFunction(minCount, maxCount, radius, entityType, timePerSpawn));
+        return this;
+    }
+
+    public EventBuilder addRandomAroundSpawnEntityWithCustomFunction(int minCount, int maxCount, int radius, EntityType<?> entityType, Consumer<Entity> consumer) {
+        eventBase.getFunctions().add(new RandomAroundSpawnEntityWithCustomFunction(minCount, maxCount, radius, entityType, consumer));
+        return this;
+    }
+
+    public EventBuilder addRandomAroundSpawnEntityWithCustomFunction(int minCount, int maxCount, int radius, EntityType<?> entityType, int timePerSpawn, Consumer<Entity> consumer) {
+        eventBase.getFunctions().add(new RandomAroundSpawnEntityWithCustomFunction(minCount, maxCount, radius, entityType, timePerSpawn, consumer));
+        return this;
+    }
+
+    public EventBuilder addDropItemFromEntityFunction(ResourceLocation[] entityTypes, Map<ItemStack, Double> contents) {
+        eventBase.getFunctions().add(new CustomDropFromEntityFunction.ItemDrop(entityTypes, contents));
+        return this;
+    }
+
+    public EventBuilder addDropLootTableFromEntityFunction(ResourceLocation[] entityTypes, Map<ResourceLocation, Double> contents) {
+        eventBase.getFunctions().add(new CustomDropFromEntityFunction.LootTableDrop(entityTypes, contents));
+        return this;
+    }
+
+    public EventBuilder addDropItemFromBlockFunction(ResourceLocation[] blocks, Map<ItemStack, Double> contents) {
+        eventBase.getFunctions().add(new CustomDropFromBlockFunction.ItemDrop(Arrays.stream(blocks).map(s -> {
+            Optional<Block> b = BuiltInRegistries.BLOCK.getOptional(s);
+            if(b.isEmpty()) return Blocks.AIR.defaultBlockState();
+            return b.get().defaultBlockState();
+        }).toList(), contents));
+        return this;
+    }
+
+    public EventBuilder addDropLootTableFromBlockFunction(ResourceLocation[] blocks, Map<ResourceLocation, Double> contents) {
+        eventBase.getFunctions().add(new CustomDropFromBlockFunction.LootTableDrop(Arrays.stream(blocks).map(s -> {
+            Optional<Block> b = BuiltInRegistries.BLOCK.getOptional(s);
+            if(b.isEmpty()) return Blocks.AIR.defaultBlockState();
+            return b.get().defaultBlockState();
+        }).toList(), contents));
+        return this;
+    }
+
+    public EventBuilder addDamageTickFunction(ResourceLocation[] entityTypes, float damage, int damageDelay) {
+        eventBase.getFunctions().add(new DamageTickFunction(entityTypes, damage, damageDelay));
+        return this;
+    }
+
+    public EventBuilder addPlaySoundFunction(SoundEvent soundEvent, SoundSource source, float volume, float pitch, EventFunction.FunctionStage stage) {
+        eventBase.getFunctions().add(new PlaySoundFunction(soundEvent, source, volume, pitch, stage));
+        return this;
+    }
+
+    public EventBuilder addPlaySoundPerTickFunction(SoundEvent soundEvent, SoundSource source, float volume, float pitch, int tick) {
+        eventBase.getFunctions().add(new PlaySoundPerTickFunction(soundEvent, source, volume, pitch, tick, EventFunction.FunctionStage.TICK));
+        return this;
+    }
+
+    public EventBuilder addSendMessageFunction(Component[] text, EventFunction.FunctionStage stage) {
+        eventBase.getFunctions().add(new SendMessageFunction(text, stage));
         return this;
     }
 
     //*****************************
     //              CONDITIONS
     // *****************************//
-    @ZenCodeType.Method
     public EventBuilder addCustomCondition(EventConditionBuilder eventCondition) {
         eventConditions.add(eventCondition);
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addDayCondition(long day, EventCondition.ConditionType predicate) {
         eventBase.getConditions().add(new DayCondition(day, predicate));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addBiomeCondition(ResourceLocation biomeID) {
         eventBase.getConditions().add(new BiomeCondition(biomeID).setEvent(eventBase));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addDimensionCondition(ResourceLocation dimensionID) {
         eventBase.getConditions().add(new DimensionCondition(dimensionID).setEvent(eventBase));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addWeatherCondition(WeatherCondition.WeatherType type) {
         eventBase.getConditions().add(new WeatherCondition(type).setEvent(eventBase));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBuilder addPlayerOnlineCondition(int countPlayers, EventCondition.ConditionType type) {
         eventBase.getConditions().add(new PlayerOnlineCondition(countPlayers, type).setEvent(eventBase));
         return this;
     }
 
-    @ZenCodeType.Method
     public EventBase create() {
 
         eventConditions.stream().map(EventConditionBuilder::create).map(s -> s.setEvent(eventBase)).forEach(eventBase.getConditions()::add);
@@ -242,6 +292,8 @@ public class EventBuilder {
             return s.create();
         }).map(s -> s.setEvent(eventBase)).forEach(eventBase.getFunctions()::add);
         eventEndConditions.forEach(eventBase.getEndConditions()::add);
+
+        eventBase.getFunctions().forEach(s -> s.setEvent(eventBase));
 
         eventBase.getEventRenders().addAll(eventRenderBuilder.create(eventBase).getEventRenders());
 

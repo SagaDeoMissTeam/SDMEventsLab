@@ -10,9 +10,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.sixik.sdmeventslab.events.EventBase;
 import org.jetbrains.annotations.Nullable;
 import org.openzen.zencode.java.ZenCodeType;
@@ -22,11 +24,17 @@ import org.openzen.zencode.java.ZenCodeType;
 @ZenCodeType.Name("mods.eventslab.functions.EventFunction")
 public class EventFunction {
 
+    public TargetFunction targetFunction = TargetFunction.DEFAULT;
     public EventBase eventBase;
     public FunctionStage functionStage = FunctionStage.TICK;
 
     public final EventFunction setEvent(EventBase event) {
         this.eventBase = event;
+        return this;
+    }
+
+    public EventFunction setTargetFunction(TargetFunction targetFunction) {
+        this.targetFunction = targetFunction;
         return this;
     }
 
@@ -40,6 +48,8 @@ public class EventFunction {
     public void onEntityInteractEvent(PlayerInteractEvent.EntityInteract event) {}
     public void onPlayerRespawnEvent(PlayerEvent.PlayerRespawnEvent event) {}
     public void onPlayerItemPickupEvent(PlayerEvent.ItemPickupEvent event) {}
+    public void onBlockBreakEvent(BlockEvent.BreakEvent event) {}
+    public void onLivingEntityTickEvent(LivingEvent.LivingTickEvent event) {}
 
     public void applyEffectPlayer(ServerPlayer player) {}
 
@@ -56,5 +66,12 @@ public class EventFunction {
         START,
         END,
         TICK
+    }
+
+    public enum TargetFunction {
+        PLAYER,
+        ENTITY,
+        ALL,
+        DEFAULT
     }
 }

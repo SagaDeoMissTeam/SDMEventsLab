@@ -6,8 +6,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import org.openzen.zencode.java.ZenCodeType;
 
 import java.util.List;
@@ -27,9 +30,11 @@ public class ReplaceAroundEntityFunction extends EventFunction{
         this.predicate = predicate;
     }
 
+//    s
+
     @Override
     public void onPlayerTickEvent(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.START || event.player.level().isClientSide) {
+        if (event.phase != TickEvent.Phase.START || event.player.level().isClientSide || targetFunction != TargetFunction.PLAYER) {
             return;
         }
 
