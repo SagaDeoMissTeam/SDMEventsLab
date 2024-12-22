@@ -49,7 +49,7 @@ public class ReplaceAroundBlockFunction extends EventFunction {
                             for (int dz = z - size; dz <= z + size; dz++) {
 
                                 BlockState block = predicate.apply(level.getBlockState(new BlockPos(dx, dy, dz)));
-                                if(block == null) block = Blocks.AIR.defaultBlockState();
+                                if(block == null) continue;
 
                                 level.setBlockAndUpdate(new BlockPos(dx, dy, dz), block);
                             }

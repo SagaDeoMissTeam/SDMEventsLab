@@ -16,7 +16,7 @@ public class EventsRegisters {
 
     public static EventBase registerEvent(EventBase eventBase) {
         if(EVENTS_MAP.containsKey(eventBase.getEventID()))
-            throw new RuntimeException("Event " + eventBase.getEventID() + " already registered!");
+            return null;
 
         EVENTS_MAP.put(eventBase.getEventID(), eventBase);
         return eventBase;
