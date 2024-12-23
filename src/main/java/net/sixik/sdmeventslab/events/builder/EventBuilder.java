@@ -3,7 +3,6 @@ package net.sixik.sdmeventslab.events.builder;
 import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -21,6 +20,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.sixik.sdmeventslab.events.EventBase;
+import net.sixik.sdmeventslab.events.builder.property.EventBiomePropertyBuilder;
+import net.sixik.sdmeventslab.events.builder.property.EventDimensionPropertyBuilder;
+import net.sixik.sdmeventslab.events.builder.property.EventPropertyBuilder;
+import net.sixik.sdmeventslab.events.builder.property.EventStructurePropertyBuilder;
 import net.sixik.sdmeventslab.events.conditions.*;
 import net.sixik.sdmeventslab.events.endConditions.EventEndCondition;
 import net.sixik.sdmeventslab.events.function.*;
@@ -58,16 +61,26 @@ public class EventBuilder {
     private ResourceLocation eventID;
     private EventBase.EventSide eventSide;
 
-    private List<EventFunctionBuilder> eventFunctions = new ArrayList<>();
+    private List<EventFunctionBuilder> functionBuilders = new ArrayList<>();
+    private List<EventCustomFunctionBuilder> eventFunctions = new ArrayList<>();
     private List<EventConditionBuilder> eventConditions = new ArrayList<>();
     private List<EventEndCondition> eventEndConditions = new ArrayList<>();
     private EventRenderBuilder eventRenderBuilder = new EventRenderBuilder();
+
     private EventPropertyBuilder eventPropertyBuilder = new EventPropertyBuilder();
+    private final List<EventStructurePropertyBuilder> eventStructurePropertyBuilder = new ArrayList<>();
+    private final List<EventDimensionPropertyBuilder> eventDimensionPropertyBuilder = new ArrayList<>();
+    private final List<EventBiomePropertyBuilder> eventBiomePropertyBuilder = new ArrayList<>();
 
     protected EventBuilder(ResourceLocation eventID, EventBase.EventSide eventSide) {
         this.eventID = eventID;
         this.eventSide = eventSide;
         eventBase = new EventBase(this.eventID, this.eventSide);
+    }
+
+    public EventBuilder addFunction(EventFunctionBuilder function) {
+        functionBuilders.add(function);
+        return this;
     }
 
     public EventBuilder addEventProperty(EventPropertyBuilder eventPropertyBuilder) {
@@ -85,10 +98,25 @@ public class EventBuilder {
         return this;
     }
 
+    public EventBuilder addStructureProperty(EventStructurePropertyBuilder builder) {
+        eventStructurePropertyBuilder.add(builder);
+        return this;
+    }
+
+    public EventBuilder addDimensionProperty(EventDimensionPropertyBuilder builder) {
+        eventDimensionPropertyBuilder.add(builder);
+        return this;
+    }
+
+    public EventBuilder addBiomeProperty(EventBiomePropertyBuilder builder) {
+        eventBiomePropertyBuilder.add(builder);
+        return this;
+    }
+
     //*****************************
     //              FUNCTIONS
     // *****************************//
-    public EventBuilder addCustomFunction(EventFunctionBuilder eventFunction) {
+    public EventBuilder addCustomFunction(EventCustomFunctionBuilder eventFunction) {
         eventFunctions.add(eventFunction);
         return this;
     }
@@ -286,21 +314,45 @@ public class EventBuilder {
 
     public EventBase create() {
 
-        eventConditions.stream().map(EventConditionBuilder::create).map(s -> s.setEvent(eventBase)).forEach(eventBase.getConditions()::add);
+        eventBase.getFunctions().forEach(s -> s.setEvent(eventBase));
+
+        for (EventFunctionBuilder functionBuilder : functionBuilders) {
+            functionBuilder.getEventFunctions().stream().map(s -> s.setEvent(eventBase)).forEach(eventBase.getFunctions()::add);
+            functionBuilder.getEventCustomFunctions().stream().map(EventCustomFunctionBuilder::create).map(s -> s.setEvent(eventBase)).forEach(eventBase.getFunctions()::add);
+        }
+
+
         eventFunctions.stream().map(s -> {
             s.checkSide(eventSide);
             return s.create();
         }).map(s -> s.setEvent(eventBase)).forEach(eventBase.getFunctions()::add);
-        eventEndConditions.forEach(eventBase.getEndConditions()::add);
 
-        eventBase.getFunctions().forEach(s -> s.setEvent(eventBase));
+        eventConditions.stream().map(EventConditionBuilder::create).map(s -> s.setEvent(eventBase)).forEach(eventBase.getConditions()::add);
+
+        eventEndConditions.forEach(eventBase.getEndConditions()::add);
 
         eventBase.getEventRenders().addAll(eventRenderBuilder.create(eventBase).getEventRenders());
 
         eventBase.renderProperty = eventPropertyBuilder.createRenderProperty();
         eventBase.properties = eventPropertyBuilder.createEventProperty();
 
-        System.out.println("SDM TEST REGISTER EVENTY" + eventBase.getEventID().toString());
+        eventStructurePropertyBuilder
+                .stream()
+                .map(EventStructurePropertyBuilder::create)
+                .map(s -> s.setEventBase(eventBase))
+                .forEach(eventBase.getStructureProperties()::add);
+
+        eventDimensionPropertyBuilder
+                .stream()
+                .map(EventDimensionPropertyBuilder::create)
+                .map(s -> s.setEventBase(eventBase))
+                .forEach(eventBase.getDimensionProperties()::add);
+
+        eventBiomePropertyBuilder
+                .stream()
+                .map(EventBiomePropertyBuilder::create)
+                .map(s -> s.setEventBase(eventBase))
+                .forEach(eventBase.getBiomeProperties()::add);
 
         return EventsRegisters.registerEvent(eventBase);
     }

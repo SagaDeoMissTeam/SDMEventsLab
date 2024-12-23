@@ -1,184 +1,211 @@
 package net.sixik.sdmeventslab.events.builder;
 
-import com.blamejared.crafttweaker.api.annotation.ZenRegister;
-import com.blamejared.crafttweaker_annotations.annotations.Document;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.sixik.sdmeventslab.events.EventBase;
-import net.sixik.sdmeventslab.events.function.EventFunction;
-import org.openzen.zencode.java.ZenCodeType;
+import net.sixik.sdmeventslab.events.conditions.WeatherCondition;
+import net.sixik.sdmeventslab.events.function.*;
+import net.sixik.sdmeventslab.events.function.drops.CustomDropFromBlockFunction;
+import net.sixik.sdmeventslab.events.function.drops.CustomDropFromEntityFunction;
+import net.sixik.sdmeventslab.events.function.integration.botania.ManaCuriosGiveFunction;
+import net.sixik.sdmeventslab.events.function.integration.botania.ManaPoolGiveFunction;
+import net.sixik.sdmeventslab.events.function.misc.DamageTickFunction;
+import net.sixik.sdmeventslab.events.function.misc.PlaySoundFunction;
+import net.sixik.sdmeventslab.events.function.misc.PlaySoundPerTickFunction;
+import net.sixik.sdmeventslab.events.function.misc.SendMessageFunction;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
-@ZenRegister
-@Document("mods/eventslab/builder/EventFunctionBuilder")
-@ZenCodeType.Name("mods.eventslab.builder.EventFunctionBuilder")
 public class EventFunctionBuilder {
-    private Consumer<MinecraftServer> onEventStart;
-    private Consumer<MinecraftServer> onEventEnd;
-    private Consumer<MinecraftServer> onEventTick;
-    private Consumer<MobSpawnEvent.FinalizeSpawn> onEntitySpawnEvent;
-    private Consumer<TickEvent.PlayerTickEvent> onPlayerTickEvent;
-    private Consumer<LivingDeathEvent> onLivingDeathEvent;
-    private Consumer<PlayerInteractEvent.EntityInteract> onEntityInteractEvent;
-    private Consumer<ServerPlayer> applyEffectPlayer;
-    private Consumer<ServerPlayer> resetEffectFromPlayers;
-    private Consumer<PlayerEvent.PlayerRespawnEvent> onPlayerRespawnEvent;
-    private Consumer<PlayerEvent.ItemPickupEvent> onPlayerItemPickupEvent;
 
-    public void checkSide(EventBase.EventSide side) {
-        if(side == EventBase.EventSide.LOCAL) {
-            if(onEntitySpawnEvent != null)
-                throw new IllegalStateException("Event function 'onEntitySpawnEvent' can't be used on LOCAL side");
-            if(onEventTick != null)
-                throw new IllegalStateException("Event function 'onEventTick' can't be used on LOCAL side");
-        }
+    public List<EventFunction> getEventFunctions() {
+        return eventFunctions;
     }
 
-    @ZenCodeType.Method
-    public EventFunctionBuilder addPlayerRespawnEvent(Consumer<PlayerEvent.PlayerRespawnEvent> consumer) {
-        this.onPlayerRespawnEvent = consumer;
+    public List<EventCustomFunctionBuilder> getEventCustomFunctions() {
+        return eventCustomFunctions;
+    }
+
+    private List<EventCustomFunctionBuilder> eventCustomFunctions = new ArrayList<>();
+    private final List<EventFunction> eventFunctions = new ArrayList<>();
+
+    public EventFunctionBuilder addCustomFunction(EventCustomFunctionBuilder eventFunction) {
+        eventCustomFunctions.add(eventFunction);
         return this;
     }
 
-    @ZenCodeType.Method
-    public EventFunctionBuilder addPlayerItemPickupEvent(Consumer<PlayerEvent.ItemPickupEvent> consumer) {
-        this.onPlayerItemPickupEvent = consumer;
+    public EventFunctionBuilder addGiveAttributeFunction(UUID attributeID, Attribute attribute, double value, AttributeModifier.Operation operation) {
+        eventFunctions.add(new GiveAttributeFunction(attributeID, attribute, value, operation));
         return this;
     }
 
-    @ZenCodeType.Method
-    public EventFunctionBuilder addEventStart(Consumer<MinecraftServer> consumer) {
-        this.onEventStart = consumer;
+    public EventFunctionBuilder addGiveEffectAroundBlockFunction(int radius, Function<BlockState, MobEffectInstance> predicate) {
+        eventFunctions.add(new GiveEffectAroundBlockFunction(radius, predicate));
         return this;
     }
 
-    @ZenCodeType.Method
-    public EventFunctionBuilder addEventEnd(Consumer<MinecraftServer> consumer) {
-        this.onEventEnd = consumer;
+    public EventFunctionBuilder addGiveEffectFunction(MobEffectInstance effectInstance) {
+        eventFunctions.add(new GiveEffectFunction(effectInstance));
         return this;
     }
 
-    @ZenCodeType.Method
-    public EventFunctionBuilder addEventTick(Consumer<MinecraftServer> consumer) {
-        this.onEventTick = consumer;
+    public EventFunctionBuilder addReplaceAroundBlockFunction(int size, Function<BlockState, @Nullable BlockState> predicate) {
+        eventFunctions.add(new ReplaceAroundBlockFunction(size, predicate));
         return this;
     }
 
-    @ZenCodeType.Method
-    public EventFunctionBuilder addEntitySpawnEvent(Consumer<MobSpawnEvent.FinalizeSpawn> consumer) {
-        this.onEntitySpawnEvent = consumer;
+    public EventFunctionBuilder addRainDamageFunction(float damage, WeatherCondition.WeatherType type) {
+        eventFunctions.add(new RainDamageFunction(damage, type));
         return this;
     }
 
-    @ZenCodeType.Method
-    public EventFunctionBuilder addPlayerTickEvent(Consumer<TickEvent.PlayerTickEvent> consumer) {
-        this.onPlayerTickEvent = consumer;
+    public EventFunctionBuilder addRainDamageFunction(float damage, int damageDelay, WeatherCondition.WeatherType type) {
+        eventFunctions.add(new RainDamageFunction(damage, type, damageDelay));
         return this;
     }
 
-    @ZenCodeType.Method
-    public EventFunctionBuilder addLivingDeathEvent(Consumer<LivingDeathEvent> consumer) {
-        this.onLivingDeathEvent = consumer;
+    public EventFunctionBuilder addRainEffectFunction(MobEffectInstance effect, WeatherCondition.WeatherType type) {
+        eventFunctions.add(new RainEffectFunction(effect, type));
         return this;
     }
 
-    @ZenCodeType.Method
-    public EventFunctionBuilder addEntityInteractEvent(Consumer<PlayerInteractEvent.EntityInteract> consumer) {
-        this.onEntityInteractEvent = consumer;
+    public EventFunctionBuilder addRainEffectFunction(MobEffectInstance effect, int checkEffectDelay, WeatherCondition.WeatherType type) {
+        eventFunctions.add(new RainEffectFunction(effect, type, checkEffectDelay));
         return this;
     }
 
-    @ZenCodeType.Method
-    public EventFunctionBuilder applyEffectToPlayer(Consumer<ServerPlayer> applyEffectPlayer, Consumer<ServerPlayer> resetFromPlayer) {
-        this.applyEffectPlayer = applyEffectPlayer;
-        this.resetEffectFromPlayers = resetFromPlayer;
+    public EventFunctionBuilder addReplaceAroundEntityFunction(int size, Function<Entity, EntityType<?>> predicate) {
+        eventFunctions.add(new ReplaceAroundEntityFunction(size, predicate));
         return this;
     }
 
-    public EventFunction create() {
-        return new EventFunction() {
-            @Override
-            public void onEventStart(MinecraftServer server) {
-                if (onEventStart!= null) {
-                    onEventStart.accept(server);
-                }
-            }
-
-            @Override
-            public void onEventEnd(MinecraftServer server) {
-                if (onEventEnd!= null) {
-                    onEventEnd.accept(server);
-                }
-            }
-
-            @Override
-            public void onEventTick(MinecraftServer server) {
-                if (onEventTick!= null) {
-                    onEventTick.accept(server);
-                }
-            }
-
-            @Override
-            public void onEntitySpawnEvent(MobSpawnEvent.FinalizeSpawn event) {
-                if (onEntitySpawnEvent!= null) {
-                    onEntitySpawnEvent.accept(event);
-                }
-            }
-
-            @Override
-            public void onPlayerTickEvent(TickEvent.PlayerTickEvent event) {
-                if (onPlayerTickEvent!= null) {
-                    onPlayerTickEvent.accept(event);
-                }
-            }
-
-            @Override
-            public void onLivingDeathEvent(LivingDeathEvent event) {
-                if (onLivingDeathEvent!= null) {
-                    onLivingDeathEvent.accept(event);
-                }
-            }
-
-            @Override
-            public void onEntityInteractEvent(PlayerInteractEvent.EntityInteract event) {
-                if (onEntityInteractEvent!= null) {
-                    onEntityInteractEvent.accept(event);
-                }
-            }
-
-            @Override
-            public void applyEffectPlayer(ServerPlayer player) {
-                if (applyEffectPlayer!= null) {
-                    applyEffectPlayer.accept(player);
-                }
-            }
-
-            @Override
-            public void resetEffectFromPlayers(ServerPlayer player) {
-                if (resetEffectFromPlayers!= null) {
-                    resetEffectFromPlayers.accept(player);
-                }
-            }
-
-            @Override
-            public void onPlayerItemPickupEvent(PlayerEvent.ItemPickupEvent event) {
-                if(onPlayerItemPickupEvent != null) {
-                    onPlayerItemPickupEvent.accept(event);
-                }
-            }
-
-            @Override
-            public void onPlayerRespawnEvent(PlayerEvent.PlayerRespawnEvent event) {
-                if(onPlayerRespawnEvent != null) {
-                    onPlayerRespawnEvent.accept(event);
-                }
-            }
-        };
+    public EventFunctionBuilder addReplaceBlockUnderPlayerFunction(Function<BlockState, @Nullable BlockState> predicate) {
+        eventFunctions.add(new ReplaceBlockUnderPlayerFunction(predicate));
+        return this;
     }
+
+    public EventFunctionBuilder addSpawnReplaceFunction(EntityType<?> toReplaceEntity, EntityType<?>[] replacableTypes) {
+        eventFunctions.add(new SpawnReplaceFunction(toReplaceEntity, replacableTypes));
+        return this;
+    }
+
+    public EventFunctionBuilder addSpawnReplaceWithCustomFunction(EntityType<?> toReplaceEntity, EntityType<?>[] replacableTypes, BiConsumer<MobSpawnEvent.FinalizeSpawn, Entity> consumer) {
+        eventFunctions.add(new SpawnReplaceWithCustomFunction(toReplaceEntity, replacableTypes, consumer));
+        return this;
+    }
+
+    public EventFunctionBuilder addWaterDamageFunction(float damage) {
+        eventFunctions.add(new WaterDamageFunction(damage));
+        return this;
+    }
+
+    public EventFunctionBuilder addWaterDamageFunction(float damage, int damageDelay) {
+        eventFunctions.add(new WaterDamageFunction(damage, damageDelay));
+        return this;
+    }
+
+    public EventFunctionBuilder addWaterEffectFunction(MobEffectInstance effect) {
+        eventFunctions.add(new WaterEffectFunction(effect));
+        return this;
+    }
+
+    public EventFunctionBuilder addWaterEffectFunction(MobEffectInstance effect, int checkEffectDelay) {
+        eventFunctions.add(new WaterEffectFunction(effect, checkEffectDelay));
+        return this;
+    }
+
+    public EventFunctionBuilder addManaCuriosGiveFunction(int minMana, int maxMana) {
+        eventFunctions.add(new ManaCuriosGiveFunction(minMana, maxMana));
+        return this;
+    }
+
+    public EventFunctionBuilder addManaPoolGiveFunction(int minMana, int maxMana) {
+        eventFunctions.add(new ManaPoolGiveFunction(minMana, maxMana));
+        return this;
+    }
+
+    public EventFunctionBuilder addRandomAroundSpawnEntityFunction(int minCount, int maxCount, int radius, EntityType<?> entityType) {
+        eventFunctions.add(new RandomAroundSpawnEntityFunction(minCount, maxCount, radius, entityType));
+        return this;
+    }
+
+    public EventFunctionBuilder addRandomAroundSpawnEntityFunction(int minCount, int maxCount, int radius, EntityType<?> entityType, int timePerSpawn) {
+        eventFunctions.add(new RandomAroundSpawnEntityFunction(minCount, maxCount, radius, entityType, timePerSpawn));
+        return this;
+    }
+
+    public EventFunctionBuilder addRandomAroundSpawnEntityWithCustomFunction(int minCount, int maxCount, int radius, EntityType<?> entityType, Consumer<Entity> consumer) {
+        eventFunctions.add(new RandomAroundSpawnEntityWithCustomFunction(minCount, maxCount, radius, entityType, consumer));
+        return this;
+    }
+
+    public EventFunctionBuilder addRandomAroundSpawnEntityWithCustomFunction(int minCount, int maxCount, int radius, EntityType<?> entityType, int timePerSpawn, Consumer<Entity> consumer) {
+        eventFunctions.add(new RandomAroundSpawnEntityWithCustomFunction(minCount, maxCount, radius, entityType, timePerSpawn, consumer));
+        return this;
+    }
+
+    public EventFunctionBuilder addDropItemFromEntityFunction(ResourceLocation[] entityTypes, Map<ItemStack, Double> contents) {
+        eventFunctions.add(new CustomDropFromEntityFunction.ItemDrop(entityTypes, contents));
+        return this;
+    }
+
+    public EventFunctionBuilder addDropLootTableFromEntityFunction(ResourceLocation[] entityTypes, Map<ResourceLocation, Double> contents) {
+        eventFunctions.add(new CustomDropFromEntityFunction.LootTableDrop(entityTypes, contents));
+        return this;
+    }
+
+    public EventFunctionBuilder addDropItemFromBlockFunction(ResourceLocation[] blocks, Map<ItemStack, Double> contents) {
+        eventFunctions.add(new CustomDropFromBlockFunction.ItemDrop(Arrays.stream(blocks).map(s -> {
+            Optional<Block> b = BuiltInRegistries.BLOCK.getOptional(s);
+            if(b.isEmpty()) return Blocks.AIR.defaultBlockState();
+            return b.get().defaultBlockState();
+        }).toList(), contents));
+        return this;
+    }
+
+    public EventFunctionBuilder addDropLootTableFromBlockFunction(ResourceLocation[] blocks, Map<ResourceLocation, Double> contents) {
+        eventFunctions.add(new CustomDropFromBlockFunction.LootTableDrop(Arrays.stream(blocks).map(s -> {
+            Optional<Block> b = BuiltInRegistries.BLOCK.getOptional(s);
+            if(b.isEmpty()) return Blocks.AIR.defaultBlockState();
+            return b.get().defaultBlockState();
+        }).toList(), contents));
+        return this;
+    }
+
+    public EventFunctionBuilder addDamageTickFunction(ResourceLocation[] entityTypes, float damage, int damageDelay) {
+        eventFunctions.add(new DamageTickFunction(entityTypes, damage, damageDelay));
+        return this;
+    }
+
+    public EventFunctionBuilder addPlaySoundFunction(SoundEvent soundEvent, SoundSource source, float volume, float pitch, EventFunction.FunctionStage stage) {
+        eventFunctions.add(new PlaySoundFunction(soundEvent, source, volume, pitch, stage));
+        return this;
+    }
+
+    public EventFunctionBuilder addPlaySoundPerTickFunction(SoundEvent soundEvent, SoundSource source, float volume, float pitch, int tick) {
+        eventFunctions.add(new PlaySoundPerTickFunction(soundEvent, source, volume, pitch, tick, EventFunction.FunctionStage.TICK));
+        return this;
+    }
+
+    public EventFunctionBuilder addSendMessageFunction(Component[] text, EventFunction.FunctionStage stage) {
+        eventFunctions.add(new SendMessageFunction(text, stage));
+        return this;
+    }
+
 }

@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.sixik.sdmeventslab.events.EventBase;
-import net.sixik.sdmeventslab.events.EventRenderManager;
+import net.sixik.sdmeventslab.events.managers.EventRenderManager;
 import net.sixik.sdmeventslab.events.renders.EventRender;
 import net.sixik.sdmeventslab.events.renders.EventRenderLogo;
 import net.sixik.sdmeventslab.network.SDMEventsLabNetwork;

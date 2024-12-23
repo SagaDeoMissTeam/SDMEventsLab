@@ -1,11 +1,11 @@
-package net.sixik.sdmeventslab.events.builder;
+package net.sixik.sdmeventslab.events.builder.property;
 
 import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.sixik.sdmeventslab.events.EventProperty;
-import net.sixik.sdmeventslab.events.EventRenderProperty;
+import net.sixik.sdmeventslab.events.property.EventGlobalProperty;
+import net.sixik.sdmeventslab.events.property.EventRenderProperty;
 import org.openzen.zencode.java.ZenCodeType;
 
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
 @ZenCodeType.Name("mods.eventslab.builder.EventPropertyBuilder")
 public class EventPropertyBuilder {
 
-    private EventProperty eventProperty = new EventProperty();
+    private EventGlobalProperty eventProperty = new EventGlobalProperty();
     private EventRenderProperty eventRenderProperty = new EventRenderProperty();
 
     @ZenCodeType.Method
@@ -127,7 +127,7 @@ public class EventPropertyBuilder {
         return this;
     }
 
-    public EventProperty createEventProperty() {
+    public EventGlobalProperty createEventProperty() {
         return eventProperty;
     }
 

@@ -1,19 +1,24 @@
 package net.sixik.sdmeventslab;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.sixik.sdmeventslab.events.EventFunctionManager;
-import net.sixik.sdmeventslab.events.EventManager;
+import net.sixik.sdmeventslab.events.managers.EventFunctionManager;
+import net.sixik.sdmeventslab.events.managers.EventManager;
 import net.sixik.sdmeventslab.network.SDMEventsLabNetwork;
 import net.sixik.sdmeventslab.register.ItemRegister;
 import org.slf4j.Logger;

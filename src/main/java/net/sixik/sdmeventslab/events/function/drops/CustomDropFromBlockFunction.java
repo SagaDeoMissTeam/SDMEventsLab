@@ -11,7 +11,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.event.level.BlockEvent;
-import net.sixik.sdmeventslab.events.ChancableFunction;
+import net.sixik.sdmeventslab.events.function.ChancableFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

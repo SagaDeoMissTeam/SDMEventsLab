@@ -1,4 +1,4 @@
-package net.sixik.sdmeventslab.events;
+package net.sixik.sdmeventslab.events.property;
 
 public class EventRenderProperty {
 

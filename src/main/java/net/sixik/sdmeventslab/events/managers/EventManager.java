@@ -1,4 +1,4 @@
-package net.sixik.sdmeventslab.events;
+package net.sixik.sdmeventslab.events.managers;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -11,6 +11,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.sixik.sdmeventslab.api.ActiveEventData;
 import net.sixik.sdmeventslab.api.IEventHistory;
+import net.sixik.sdmeventslab.events.EventBase;
+import net.sixik.sdmeventslab.events.EventManagerConfig;
 import net.sixik.sdmeventslab.events.conditions.EventCondition;
 import net.sixik.sdmeventslab.events.endConditions.EventEndCondition;
 import net.sixik.sdmeventslab.register.EventsRegisters;

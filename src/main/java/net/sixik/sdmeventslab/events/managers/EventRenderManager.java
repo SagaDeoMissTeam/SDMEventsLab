@@ -1,7 +1,6 @@
-package net.sixik.sdmeventslab.events;
+package net.sixik.sdmeventslab.events.managers;
 
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderGuiEvent;
@@ -9,6 +8,7 @@ import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.sixik.sdmeventslab.SDMEventsLab;
+import net.sixik.sdmeventslab.events.EventBase;
 import net.sixik.sdmeventslab.events.renders.EventRender;
 import net.sixik.sdmeventslab.events.renders.EventRenderLogo;
 
