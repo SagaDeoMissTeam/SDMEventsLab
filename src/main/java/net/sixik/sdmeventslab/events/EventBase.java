@@ -82,6 +82,14 @@ public class EventBase {
         return structureProperties;
     }
 
+    public List<EventDimensionProperty> getDimensionProperties() {
+        return dimensionProperties;
+    }
+
+    public List<EventBiomeProperty> getBiomeProperties() {
+        return biomeProperties;
+    }
+
     public List<EventRender> getEventRenders() {
         return eventRenders;
     }
@@ -102,6 +110,24 @@ public class EventBase {
                 server.getPlayerList().getPlayers().forEach(function::applyEffectPlayer);
         }
 
+
+        for (EventBiomeProperty property : getBiomeProperties()) {
+            for (EventFunction function : property.getFunctions()) {
+                function.onEventStart(server);
+            }
+        }
+
+        for (EventStructureProperty property : getStructureProperties()) {
+            for (EventFunction function : property.getFunctions()) {
+                function.onEventStart(server);
+            }
+        }
+
+        for (EventDimensionProperty property : getDimensionProperties()) {
+            for (EventFunction function : property.getFunctions()) {
+                function.onEventStart(server);
+            }
+        }
 
         switch (eventSide) {
             case LOCAL -> {
@@ -127,6 +153,33 @@ public class EventBase {
                 server.getPlayerList().getPlayers().forEach(function::resetEffectFromPlayers);
         }
 
+        for (EventBiomeProperty property : getBiomeProperties()) {
+            for (EventFunction function : property.getFunctions()) {
+                function.onEventEnd(server);
+
+                if(eventSide == EventSide.GLOBAL)
+                    server.getPlayerList().getPlayers().forEach(function::resetEffectFromPlayers);
+            }
+        }
+
+        for (EventStructureProperty property : getStructureProperties()) {
+            for (EventFunction function : property.getFunctions()) {
+                function.onEventEnd(server);
+
+                if(eventSide == EventSide.GLOBAL)
+                    server.getPlayerList().getPlayers().forEach(function::resetEffectFromPlayers);
+            }
+        }
+
+        for (EventDimensionProperty property : getDimensionProperties()) {
+            for (EventFunction function : property.getFunctions()) {
+                function.onEventEnd(server);
+
+                if(eventSide == EventSide.GLOBAL)
+                    server.getPlayerList().getPlayers().forEach(function::resetEffectFromPlayers);
+            }
+        }
+
         switch (eventSide) {
             case LOCAL -> {
                 for (ServerPlayer player : server.getPlayerList().getPlayers()) {
@@ -139,6 +192,28 @@ public class EventBase {
     public void onEventTick(MinecraftServer server) {
         for (EventFunction function : getFunctions())
             function.onEventTick(server);
+
+
+        for (EventStructureProperty property : getStructureProperties()) {
+
+            for (EventFunction function : property.getFunctions()) {
+                function.onEventTick(server);
+            }
+        }
+
+        for (EventBiomeProperty property : getBiomeProperties()) {
+
+            for (EventFunction function : property.getFunctions()) {
+                function.onEventTick(server);
+            }
+        }
+
+        for (EventDimensionProperty property : getDimensionProperties()) {
+
+            for (EventFunction function : property.getFunctions()) {
+                function.onEventTick(server);
+            }
+        }
     }
 
     @ZenRegister

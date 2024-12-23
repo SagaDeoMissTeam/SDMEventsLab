@@ -14,6 +14,8 @@ import net.sixik.sdmeventslab.api.ActiveEventData;
 import net.sixik.sdmeventslab.api.IEventHistory;
 import net.sixik.sdmeventslab.events.EventBase;
 import net.sixik.sdmeventslab.events.EventManagerConfig;
+import net.sixik.sdmeventslab.events.property.EventBiomeProperty;
+import net.sixik.sdmeventslab.events.property.EventDimensionProperty;
 import net.sixik.sdmeventslab.events.property.EventStructureProperty;
 import net.sixik.sdmeventslab.events.function.EventFunction;
 import net.sixik.sdmeventslab.network.client.SendEndEventS2C;
@@ -64,6 +66,24 @@ public class EventFunctionManager {
                         }
                     }
                 }
+
+                for (EventBiomeProperty property : startedGlobalEvent.getBiomeProperties()) {
+                    if (property.inBiome(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onEntitySpawnEvent(event);
+                        }
+                    }
+                }
+
+                for (EventDimensionProperty property : startedGlobalEvent.getDimensionProperties()) {
+                    if (property.inDimension(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onEntitySpawnEvent(event);
+                        }
+                    }
+                }
             }
 
         }
@@ -90,6 +110,24 @@ public class EventFunctionManager {
                         }
                     }
                 }
+
+                for (EventBiomeProperty property : startedGlobalEvent.getBiomeProperties()) {
+                    if (property.inBiome(event.player.blockPosition(), player.serverLevel())) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onPlayerTickEvent(event);
+                        }
+                    }
+                }
+
+                for (EventDimensionProperty property : startedGlobalEvent.getDimensionProperties()) {
+                    if (property.inDimension(event.player.blockPosition(), player.serverLevel())) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onPlayerTickEvent(event);
+                        }
+                    }
+                }
             }
 
             flag = startedGlobalEvent.properties.isPlayerCanStayOnSun;
@@ -110,6 +148,24 @@ public class EventFunctionManager {
                         if (structureProperty.inStructure(player.blockPosition(), player.serverLevel())) {
 
                             for (EventFunction function : structureProperty.getFunctions()) {
+                                function.onPlayerTickEvent(event);
+                            }
+                        }
+                    }
+
+                    for (EventBiomeProperty property : base.getBiomeProperties()) {
+                        if (property.inBiome(event.player.blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : property.getFunctions()) {
+                                function.onPlayerTickEvent(event);
+                            }
+                        }
+                    }
+
+                    for (EventDimensionProperty property : base.getDimensionProperties()) {
+                        if (property.inDimension(event.player.blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : property.getFunctions()) {
                                 function.onPlayerTickEvent(event);
                             }
                         }
@@ -145,6 +201,24 @@ public class EventFunctionManager {
                         }
                     }
                 }
+
+                for (EventBiomeProperty property : startedGlobalEvent.getBiomeProperties()) {
+                    if (property.inBiome(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onLivingDeathEvent(event);
+                        }
+                    }
+                }
+
+                for (EventDimensionProperty property : startedGlobalEvent.getDimensionProperties()) {
+                    if (property.inDimension(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onLivingDeathEvent(event);
+                        }
+                    }
+                }
             }
         }
 
@@ -163,6 +237,24 @@ public class EventFunctionManager {
                         if (structureProperty.inStructure(player.blockPosition(), player.serverLevel())) {
 
                             for (EventFunction function : structureProperty.getFunctions()) {
+                                function.onLivingDeathEvent(event);
+                            }
+                        }
+                    }
+
+                    for (EventBiomeProperty property : base.getBiomeProperties()) {
+                        if (property.inBiome(event.getEntity().blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : property.getFunctions()) {
+                                function.onLivingDeathEvent(event);
+                            }
+                        }
+                    }
+
+                    for (EventDimensionProperty property : base.getDimensionProperties()) {
+                        if (property.inDimension(event.getEntity().blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : property.getFunctions()) {
                                 function.onLivingDeathEvent(event);
                             }
                         }
@@ -219,6 +311,24 @@ public class EventFunctionManager {
                         }
                     }
                 }
+
+                for (EventBiomeProperty property : startedGlobalEvent.getBiomeProperties()) {
+                    if (property.inBiome(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onEntityInteractEvent(event);
+                        }
+                    }
+                }
+
+                for (EventDimensionProperty property : startedGlobalEvent.getDimensionProperties()) {
+                    if (property.inDimension(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onEntityInteractEvent(event);
+                        }
+                    }
+                }
             }
         }
 
@@ -239,6 +349,24 @@ public class EventFunctionManager {
                             }
                         }
                     }
+
+                    for (EventBiomeProperty property : base.getBiomeProperties()) {
+                        if (property.inBiome(event.getEntity().blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : property.getFunctions()) {
+                                function.onEntityInteractEvent(event);
+                            }
+                        }
+                    }
+
+                    for (EventDimensionProperty property : base.getDimensionProperties()) {
+                        if (property.inDimension(event.getEntity().blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : property.getFunctions()) {
+                                function.onEntityInteractEvent(event);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -247,22 +375,14 @@ public class EventFunctionManager {
 
     @SubscribeEvent
     public void onPlayerRespawnEvent(PlayerEvent.PlayerRespawnEvent event) {
+
+
         for (EventBase startedGlobalEvent : EventManager.INSTANCE.startedGlobalEvents) {
             for (EventFunction function : startedGlobalEvent.getFunctions()) {
                 function.onPlayerRespawnEvent(event);
-
-                if(event.getEntity() instanceof ServerPlayer player) {
-                    for (EventBase value : EventsRegisters.getEvents().values()) {
-                        if(!EventManager.INSTANCE.isStartedEvent(value) || !EventManager.INSTANCE.isStartedEvent(value, player)) {
-                            for (EventFunction function1 : value.getFunctions()) {
-                                function1.resetEffectFromPlayers(player);
-                            }
-                        }
-                    }
-                }
             }
 
-            if(event.getEntity().level() instanceof ServerLevel level) {
+            if (event.getEntity().level() instanceof ServerLevel level) {
 
                 for (EventStructureProperty structureProperty : startedGlobalEvent.getStructureProperties()) {
                     if (structureProperty.inStructure(event.getEntity().blockPosition(), level)) {
@@ -272,28 +392,62 @@ public class EventFunctionManager {
                         }
                     }
                 }
-            }
 
-        }
+                for (EventBiomeProperty property : startedGlobalEvent.getBiomeProperties()) {
+                    if (property.inBiome(event.getEntity().blockPosition(), level)) {
 
-        if(EventManager.INSTANCE.startedGlobalEvents.isEmpty()) {
-            if(event.getEntity() instanceof ServerPlayer player) {
-                for (EventBase value : EventsRegisters.getEvents().values()) {
-                    for (EventFunction function : value.getFunctions()) {
-                        function.resetEffectFromPlayers(player);
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onPlayerRespawnEvent(event);
+                        }
+                    }
+                }
+
+                for (EventDimensionProperty property : startedGlobalEvent.getDimensionProperties()) {
+                    if (property.inDimension(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onPlayerRespawnEvent(event);
+                        }
                     }
                 }
             }
         }
 
-        if(event.getEntity() instanceof IEventHistory eventHistory && event.getEntity().level() instanceof ServerLevel level) {
+        if (EventManager.INSTANCE.startedGlobalEvents.isEmpty()) {
+            if (event.getEntity() instanceof ServerPlayer player) {
+                for (EventBase value : EventsRegisters.getEvents().values()) {
+                    for (EventFunction function : value.getFunctions()) {
+                        function.resetEffectFromPlayers(player);
+                    }
+
+                    for (EventStructureProperty structureProperty : value.getStructureProperties()) {
+                        for (EventFunction function : structureProperty.getFunctions()) {
+                            function.resetEffectFromPlayers(player);
+                        }
+                    }
+
+                    for (EventBiomeProperty structureProperty : value.getBiomeProperties()) {
+                        for (EventFunction function : structureProperty.getFunctions()) {
+                            function.resetEffectFromPlayers(player);
+                        }
+                    }
+
+                    for (EventDimensionProperty structureProperty : value.getDimensionProperties()) {
+                        for (EventFunction function : structureProperty.getFunctions()) {
+                            function.resetEffectFromPlayers(player);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (event.getEntity() instanceof IEventHistory eventHistory && event.getEntity().level() instanceof ServerLevel level) {
             for (ActiveEventData activeEventData : eventHistory.sdm$getActivesEvents()) {
                 EventBase base = EventsRegisters.getEvent(activeEventData.eventID);
-                if(base == null) continue;
+                if (base == null) continue;
                 for (EventFunction function : base.getFunctions()) {
                     function.onPlayerRespawnEvent(event);
                 }
-
 
 
                 for (EventStructureProperty structureProperty : base.getStructureProperties()) {
@@ -305,9 +459,56 @@ public class EventFunctionManager {
                     }
                 }
 
+                for (EventBiomeProperty property : base.getBiomeProperties()) {
+                    if (property.inBiome(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onPlayerRespawnEvent(event);
+                        }
+                    }
+                }
+
+                for (EventDimensionProperty property : base.getDimensionProperties()) {
+                    if (property.inDimension(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onPlayerRespawnEvent(event);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        if (event.getEntity() instanceof ServerPlayer player) {
+            for (EventBase value : EventsRegisters.getEvents().values()) {
+                if (!EventManager.INSTANCE.isStartedEvent(value) || !EventManager.INSTANCE.isStartedEvent(value, player)) {
+                    for (EventFunction function1 : value.getFunctions()) {
+                        function1.resetEffectFromPlayers(player);
+                    }
+
+                    for (EventStructureProperty structureProperty : value.getStructureProperties()) {
+                        for (EventFunction function1 : structureProperty.getFunctions()) {
+                            function1.resetEffectFromPlayers(player);
+                        }
+                    }
+
+                    for (EventBiomeProperty structureProperty : value.getBiomeProperties()) {
+                        for (EventFunction function1 : structureProperty.getFunctions()) {
+                            function1.resetEffectFromPlayers(player);
+                        }
+                    }
+
+                    for (EventDimensionProperty structureProperty : value.getDimensionProperties()) {
+                        for (EventFunction function1 : structureProperty.getFunctions()) {
+                            function1.resetEffectFromPlayers(player);
+                        }
+                    }
+                }
             }
         }
     }
+
 
     @SubscribeEvent
     public void onPlayerItemPickupEvent(PlayerEvent.ItemPickupEvent event) {
@@ -317,6 +518,24 @@ public class EventFunctionManager {
             }
 
             if(event.getEntity().level() instanceof ServerLevel level) {
+
+                for (EventBiomeProperty property : startedGlobalEvent.getBiomeProperties()) {
+                    if (property.inBiome(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onPlayerItemPickupEvent(event);
+                        }
+                    }
+                }
+
+                for (EventDimensionProperty property : startedGlobalEvent.getDimensionProperties()) {
+                    if (property.inDimension(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onPlayerItemPickupEvent(event);
+                        }
+                    }
+                }
 
                 for (EventStructureProperty structureProperty : startedGlobalEvent.getStructureProperties()) {
                     if (structureProperty.inStructure(event.getEntity().blockPosition(), level)) {
@@ -337,7 +556,23 @@ public class EventFunctionManager {
                     function.onPlayerItemPickupEvent(event);
                 }
 
+                for (EventBiomeProperty property : base.getBiomeProperties()) {
+                    if (property.inBiome(event.getEntity().blockPosition(), level)) {
 
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onPlayerItemPickupEvent(event);
+                        }
+                    }
+                }
+
+                for (EventDimensionProperty property : base.getDimensionProperties()) {
+                    if (property.inDimension(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onPlayerItemPickupEvent(event);
+                        }
+                    }
+                }
 
                 for (EventStructureProperty structureProperty : base.getStructureProperties()) {
                     if (structureProperty.inStructure(event.getEntity().blockPosition(), level)) {
@@ -381,6 +616,24 @@ public class EventFunctionManager {
                     }
 
                     if(event.getEntity().level() instanceof ServerLevel level) {
+
+                        for (EventBiomeProperty property : startedGlobalEvent.getBiomeProperties()) {
+                            if (property.inBiome(event.getEntity().blockPosition(), level)) {
+
+                                for (EventFunction function : property.getFunctions()) {
+                                    function.onLivingEntityTickEvent(event);
+                                }
+                            }
+                        }
+
+                        for (EventDimensionProperty property : startedGlobalEvent.getDimensionProperties()) {
+                            if (property.inDimension(event.getEntity().blockPosition(), level)) {
+
+                                for (EventFunction function : property.getFunctions()) {
+                                    function.onLivingEntityTickEvent(event);
+                                }
+                            }
+                        }
 
                         for (EventStructureProperty structureProperty : startedGlobalEvent.getStructureProperties()) {
                             if (structureProperty.inStructure(event.getEntity().blockPosition(), level)) {
@@ -434,6 +687,24 @@ public class EventFunctionManager {
                         }
                     }
                 }
+
+                for (EventBiomeProperty property : startedGlobalEvent.getBiomeProperties()) {
+                    if (property.inBiome(event.getPlayer().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onBlockBreakEvent(event);
+                        }
+                    }
+                }
+
+                for (EventDimensionProperty property : startedGlobalEvent.getDimensionProperties()) {
+                    if (property.inDimension(event.getPlayer().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onBlockBreakEvent(event);
+                        }
+                    }
+                }
             }
         }
 
@@ -450,6 +721,24 @@ public class EventFunctionManager {
                         if (structureProperty.inStructure(player.blockPosition(), player.serverLevel())) {
 
                             for (EventFunction function : structureProperty.getFunctions()) {
+                                function.onBlockBreakEvent(event);
+                            }
+                        }
+                    }
+
+                    for (EventBiomeProperty property : base.getBiomeProperties()) {
+                        if (property.inBiome(event.getPlayer().blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : property.getFunctions()) {
+                                function.onBlockBreakEvent(event);
+                            }
+                        }
+                    }
+
+                    for (EventDimensionProperty property : base.getDimensionProperties()) {
+                        if (property.inDimension(event.getPlayer().blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : property.getFunctions()) {
                                 function.onBlockBreakEvent(event);
                             }
                         }

@@ -1,6 +1,14 @@
 package net.sixik.sdmeventslab.events.property;
 
+import com.mojang.datafixers.util.Either;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.sixik.sdmeventslab.events.EventBase;
 import net.sixik.sdmeventslab.events.function.EventFunction;
 
@@ -28,5 +36,16 @@ public class EventBiomeProperty {
         getFunctions().stream().map(s -> s.setEvent(eventBase));
 
         return this;
+    }
+
+    public boolean inBiome(BlockPos pos, ServerLevel level) {
+
+        if(biome.length == 0) return true;
+
+        for (ResourceLocation resourceLocation : biome) {
+            if(level.getBiome(pos).is(resourceLocation)) return true;
+        }
+
+        return false;
     }
 }

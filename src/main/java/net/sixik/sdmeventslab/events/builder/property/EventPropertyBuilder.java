@@ -1,4 +1,4 @@
-package net.sixik.sdmeventslab.events.builder;
+package net.sixik.sdmeventslab.events.builder.property;
 
 import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import com.blamejared.crafttweaker_annotations.annotations.Document;

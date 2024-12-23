@@ -20,6 +20,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.sixik.sdmeventslab.events.EventBase;
+import net.sixik.sdmeventslab.events.builder.property.EventBiomePropertyBuilder;
+import net.sixik.sdmeventslab.events.builder.property.EventDimensionPropertyBuilder;
+import net.sixik.sdmeventslab.events.builder.property.EventPropertyBuilder;
+import net.sixik.sdmeventslab.events.builder.property.EventStructurePropertyBuilder;
 import net.sixik.sdmeventslab.events.conditions.*;
 import net.sixik.sdmeventslab.events.endConditions.EventEndCondition;
 import net.sixik.sdmeventslab.events.function.*;
@@ -62,8 +66,11 @@ public class EventBuilder {
     private List<EventConditionBuilder> eventConditions = new ArrayList<>();
     private List<EventEndCondition> eventEndConditions = new ArrayList<>();
     private EventRenderBuilder eventRenderBuilder = new EventRenderBuilder();
+
     private EventPropertyBuilder eventPropertyBuilder = new EventPropertyBuilder();
-    private final List<EventStructurePropertyBuilder.Builder> eventStructurePropertyBuilder = new ArrayList<>();
+    private final List<EventStructurePropertyBuilder> eventStructurePropertyBuilder = new ArrayList<>();
+    private final List<EventDimensionPropertyBuilder> eventDimensionPropertyBuilder = new ArrayList<>();
+    private final List<EventBiomePropertyBuilder> eventBiomePropertyBuilder = new ArrayList<>();
 
     protected EventBuilder(ResourceLocation eventID, EventBase.EventSide eventSide) {
         this.eventID = eventID;
@@ -91,8 +98,18 @@ public class EventBuilder {
         return this;
     }
 
-    public EventBuilder addStructureProperty(EventStructurePropertyBuilder.Builder builder) {
+    public EventBuilder addStructureProperty(EventStructurePropertyBuilder builder) {
         eventStructurePropertyBuilder.add(builder);
+        return this;
+    }
+
+    public EventBuilder addDimensionProperty(EventDimensionPropertyBuilder builder) {
+        eventDimensionPropertyBuilder.add(builder);
+        return this;
+    }
+
+    public EventBuilder addBiomeProperty(EventBiomePropertyBuilder builder) {
+        eventBiomePropertyBuilder.add(builder);
         return this;
     }
 
@@ -321,9 +338,21 @@ public class EventBuilder {
 
         eventStructurePropertyBuilder
                 .stream()
-                .map(EventStructurePropertyBuilder.Builder::create)
+                .map(EventStructurePropertyBuilder::create)
                 .map(s -> s.setEventBase(eventBase))
                 .forEach(eventBase.getStructureProperties()::add);
+
+        eventDimensionPropertyBuilder
+                .stream()
+                .map(EventDimensionPropertyBuilder::create)
+                .map(s -> s.setEventBase(eventBase))
+                .forEach(eventBase.getDimensionProperties()::add);
+
+        eventBiomePropertyBuilder
+                .stream()
+                .map(EventBiomePropertyBuilder::create)
+                .map(s -> s.setEventBase(eventBase))
+                .forEach(eventBase.getBiomeProperties()::add);
 
         return EventsRegisters.registerEvent(eventBase);
     }
