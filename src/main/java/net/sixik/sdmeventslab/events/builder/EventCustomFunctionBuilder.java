@@ -30,6 +30,8 @@ public class EventCustomFunctionBuilder {
     private Consumer<ServerPlayer> resetEffectFromPlayers;
     private Consumer<PlayerEvent.PlayerRespawnEvent> onPlayerRespawnEvent;
     private Consumer<PlayerEvent.ItemPickupEvent> onPlayerItemPickupEvent;
+    private Consumer<PlayerInteractEvent.LeftClickBlock> onBlockAttack;
+    private Consumer<PlayerInteractEvent.RightClickBlock> onBlockInteract;
 
     public void checkSide(EventBase.EventSide side) {
         if(side == EventBase.EventSide.LOCAL) {
@@ -91,6 +93,18 @@ public class EventCustomFunctionBuilder {
     @ZenCodeType.Method
     public EventCustomFunctionBuilder addEntityInteractEvent(Consumer<PlayerInteractEvent.EntityInteract> consumer) {
         this.onEntityInteractEvent = consumer;
+        return this;
+    }
+
+    @ZenCodeType.Method
+    public EventCustomFunctionBuilder addBlockInteractEvent(Consumer<PlayerInteractEvent.RightClickBlock> consumer) {
+        this.onBlockInteract = consumer;
+        return this;
+    }
+
+    @ZenCodeType.Method
+    public EventCustomFunctionBuilder addBlockAttackEvent(Consumer<PlayerInteractEvent.LeftClickBlock> consumer) {
+        this.onBlockAttack = consumer;
         return this;
     }
 
@@ -178,6 +192,18 @@ public class EventCustomFunctionBuilder {
                 if(onPlayerRespawnEvent != null) {
                     onPlayerRespawnEvent.accept(event);
                 }
+            }
+
+            @Override
+            public void onBlockInteractEvent(PlayerInteractEvent.RightClickBlock event) {
+                if(onBlockInteract != null)
+                    onBlockInteract.accept(event);
+            }
+
+            @Override
+            public void onBlockAttackEvent(PlayerInteractEvent.LeftClickBlock event) {
+                if(onBlockAttack != null)
+                    onBlockAttack.accept(event);
             }
         };
     }

@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.sixik.sdmeventslab.events.EventBase;
+import net.sixik.sdmeventslab.events.builder.function.EventFunctionBuilder;
 import net.sixik.sdmeventslab.events.builder.property.EventBiomePropertyBuilder;
 import net.sixik.sdmeventslab.events.builder.property.EventDimensionPropertyBuilder;
 import net.sixik.sdmeventslab.events.builder.property.EventPropertyBuilder;

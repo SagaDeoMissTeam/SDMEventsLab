@@ -1,9 +1,11 @@
 package net.sixik.sdmeventslab.events.function.misc;
 
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.event.TickEvent;
+import net.sixik.sdmeventslab.network.client.SendSoundS2C;
 
 public class PlaySoundPerTickFunction extends PlaySoundFunction {
 
@@ -23,7 +25,9 @@ public class PlaySoundPerTickFunction extends PlaySoundFunction {
         if(event.player.level().getGameTime() % tick == 0) {
             var player = event.player;
 
-            player.level().playSound(player, player.getX(), player.getY(), player.getZ(), soundEvent, source, volume, pitch);
+            if(player instanceof ServerPlayer player1)
+                new SendSoundS2C(soundEvent, source,volume,pitch).sendTo(player1);
+
         }
     }
 }

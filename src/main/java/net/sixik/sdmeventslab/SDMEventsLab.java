@@ -1,17 +1,12 @@
 package net.sixik.sdmeventslab;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -30,7 +25,7 @@ import java.nio.file.Path;
 @Mod(SDMEventsLab.MODID)
 public class SDMEventsLab {
     public static final String MODID = "sdmeventslab";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public static boolean debugMessages = false;
 

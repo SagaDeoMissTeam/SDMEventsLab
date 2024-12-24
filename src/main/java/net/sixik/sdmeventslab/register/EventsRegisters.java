@@ -11,8 +11,8 @@ import java.util.HashMap;
 public class EventsRegisters {
 
     public static final HashMap<String, EventEndCondition> END_CONDITION_HASH_MAP = new HashMap<>();
-    private static final HashMap<ResourceLocation, AbstractEventCondition> CONDITION_HASH_MAP = new HashMap<>();
-    private static final HashMap<ResourceLocation, EventBase> EVENTS_MAP = new HashMap<>();
+    public static final HashMap<ResourceLocation, AbstractEventCondition> CONDITION_HASH_MAP = new HashMap<>();
+    public static final HashMap<ResourceLocation, EventBase> EVENTS_MAP = new HashMap<>();
 
     public static EventBase registerEvent(EventBase eventBase) {
         if(EVENTS_MAP.containsKey(eventBase.getEventID()))

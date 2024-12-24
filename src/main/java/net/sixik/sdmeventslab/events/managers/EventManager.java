@@ -133,8 +133,13 @@ public class EventManager implements INBTSerializable<CompoundTag> {
         startedGlobalEvents.add(base);
         globalEventsHistory.put(base.getEventID(), globalEventsHistory.getOrDefault(base.getEventID(), 0) + 1);
         base.onEventStart(server);
-
         eventDayEnd = getDay(server) + base.properties.eventDayTime;
+
+        int count = globalEventsHistory.getOrDefault(base.getEventID(), 0);
+        if(count >= 30) {
+            globalEventsHistory.put(base.getEventID(), 0);
+        }
+
     }
 
     public static final long getDay(MinecraftServer server) {

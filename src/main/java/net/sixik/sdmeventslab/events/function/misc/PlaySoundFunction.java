@@ -1,5 +1,6 @@
 package net.sixik.sdmeventslab.events.function.misc;
 
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -7,6 +8,7 @@ import net.minecraft.sounds.SoundSource;
 import net.sixik.sdmeventslab.api.ActiveEventData;
 import net.sixik.sdmeventslab.api.IEventHistory;
 import net.sixik.sdmeventslab.events.function.EventFunction;
+import net.sixik.sdmeventslab.network.client.SendSoundS2C;
 
 import java.util.Optional;
 
@@ -38,14 +40,14 @@ public class PlaySoundFunction extends EventFunction {
         play(server);
     }
 
-    private void play(MinecraftServer server) {
+    protected void play(MinecraftServer server) {
         switch (eventBase.getEventSide()) {
             case LOCAL -> {
                 for (ServerPlayer player : server.getPlayerList().getPlayers()) {
                     if(player instanceof IEventHistory eventHistory) {
                         Optional<ActiveEventData> o = eventHistory.sdm$getActivesEvents().stream().filter(s -> s.eventID.equals(eventBase.getEventID())).findFirst();
                         if(o.isPresent()) {
-                            player.level().playSound(player, player.getX(), player.getY(), player.getZ(), soundEvent, source, volume, pitch);
+                            new SendSoundS2C(soundEvent, source,volume,pitch).sendTo(player);
                             break;
                         }
                     }
@@ -53,7 +55,7 @@ public class PlaySoundFunction extends EventFunction {
             }
             case GLOBAL -> {
                 for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-                    player.level().playSound(player, player.getX(), player.getY(), player.getZ(), soundEvent, source, volume, pitch);
+                    new SendSoundS2C(soundEvent, source,volume,pitch).sendTo(player);
                 }
             }
         }
