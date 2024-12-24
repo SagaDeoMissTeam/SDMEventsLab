@@ -2,7 +2,7 @@ package net.sixik.sdmeventslab.events.builder.property;
 
 import net.minecraft.resources.ResourceLocation;
 import net.sixik.sdmeventslab.events.builder.EventCustomFunctionBuilder;
-import net.sixik.sdmeventslab.events.builder.EventFunctionBuilder;
+import net.sixik.sdmeventslab.events.builder.function.EventFunctionBuilder;
 import net.sixik.sdmeventslab.events.property.EventBiomeProperty;
 
 import java.util.ArrayList;

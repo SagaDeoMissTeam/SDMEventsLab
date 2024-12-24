@@ -748,4 +748,159 @@ public class EventFunctionManager {
         }
     }
 
+    @SubscribeEvent
+    public void onBlockInteractEvent(PlayerInteractEvent.RightClickBlock event) {
+        for (EventBase startedGlobalEvent : EventManager.INSTANCE.startedGlobalEvents) {
+            for (EventFunction function : startedGlobalEvent.getFunctions()) {
+                function.onBlockInteractEvent(event);
+            }
+
+            if(event.getEntity().level() instanceof ServerLevel level) {
+
+                for (EventStructureProperty structureProperty : startedGlobalEvent.getStructureProperties()) {
+                    if (structureProperty.inStructure(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : structureProperty.getFunctions()) {
+                            function.onBlockInteractEvent(event);
+                        }
+                    }
+                }
+
+                for (EventBiomeProperty property : startedGlobalEvent.getBiomeProperties()) {
+                    if (property.inBiome(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onBlockInteractEvent(event);
+                        }
+                    }
+                }
+
+                for (EventDimensionProperty property : startedGlobalEvent.getDimensionProperties()) {
+                    if (property.inDimension(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onBlockInteractEvent(event);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(event.getEntity() instanceof ServerPlayer player) {
+            if(player instanceof IEventHistory eventHistory) {
+                for (ActiveEventData activeEventData : eventHistory.sdm$getActivesEvents()) {
+                    EventBase base = EventsRegisters.getEvent(activeEventData.eventID);
+                    if(base == null) continue;
+                    for (EventFunction function : base.getFunctions()) {
+                        function.onBlockInteractEvent(event);
+                    }
+
+                    for (EventStructureProperty structureProperty : base.getStructureProperties()) {
+                        if (structureProperty.inStructure(player.blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : structureProperty.getFunctions()) {
+                                function.onBlockInteractEvent(event);
+                            }
+                        }
+                    }
+
+                    for (EventBiomeProperty property : base.getBiomeProperties()) {
+                        if (property.inBiome(event.getEntity().blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : property.getFunctions()) {
+                                function.onBlockInteractEvent(event);
+                            }
+                        }
+                    }
+
+                    for (EventDimensionProperty property : base.getDimensionProperties()) {
+                        if (property.inDimension(event.getEntity().blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : property.getFunctions()) {
+                                function.onBlockInteractEvent(event);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onBlockAttackEvent(PlayerInteractEvent.LeftClickBlock event) {
+        for (EventBase startedGlobalEvent : EventManager.INSTANCE.startedGlobalEvents) {
+            for (EventFunction function : startedGlobalEvent.getFunctions()) {
+                function.onBlockAttackEvent(event);
+            }
+
+            if(event.getEntity().level() instanceof ServerLevel level) {
+
+                for (EventStructureProperty structureProperty : startedGlobalEvent.getStructureProperties()) {
+                    if (structureProperty.inStructure(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : structureProperty.getFunctions()) {
+                            function.onBlockAttackEvent(event);
+                        }
+                    }
+                }
+
+                for (EventBiomeProperty property : startedGlobalEvent.getBiomeProperties()) {
+                    if (property.inBiome(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onBlockAttackEvent(event);
+                        }
+                    }
+                }
+
+                for (EventDimensionProperty property : startedGlobalEvent.getDimensionProperties()) {
+                    if (property.inDimension(event.getEntity().blockPosition(), level)) {
+
+                        for (EventFunction function : property.getFunctions()) {
+                            function.onBlockAttackEvent(event);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(event.getEntity() instanceof ServerPlayer player) {
+            if(player instanceof IEventHistory eventHistory) {
+                for (ActiveEventData activeEventData : eventHistory.sdm$getActivesEvents()) {
+                    EventBase base = EventsRegisters.getEvent(activeEventData.eventID);
+                    if(base == null) continue;
+                    for (EventFunction function : base.getFunctions()) {
+                        function.onBlockAttackEvent(event);
+                    }
+
+                    for (EventStructureProperty structureProperty : base.getStructureProperties()) {
+                        if (structureProperty.inStructure(player.blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : structureProperty.getFunctions()) {
+                                function.onBlockAttackEvent(event);
+                            }
+                        }
+                    }
+
+                    for (EventBiomeProperty property : base.getBiomeProperties()) {
+                        if (property.inBiome(event.getEntity().blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : property.getFunctions()) {
+                                function.onBlockAttackEvent(event);
+                            }
+                        }
+                    }
+
+                    for (EventDimensionProperty property : base.getDimensionProperties()) {
+                        if (property.inDimension(event.getEntity().blockPosition(), player.serverLevel())) {
+
+                            for (EventFunction function : property.getFunctions()) {
+                                function.onBlockAttackEvent(event);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

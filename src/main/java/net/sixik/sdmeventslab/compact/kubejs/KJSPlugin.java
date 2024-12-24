@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import net.sixik.sdmeventslab.events.EventBase;
 import net.sixik.sdmeventslab.events.builder.*;
+import net.sixik.sdmeventslab.events.builder.function.EventFunctionBuilder;
 import net.sixik.sdmeventslab.events.builder.property.EventBiomePropertyBuilder;
 import net.sixik.sdmeventslab.events.builder.property.EventDimensionPropertyBuilder;
 import net.sixik.sdmeventslab.events.builder.property.EventPropertyBuilder;
@@ -17,7 +18,7 @@ public class KJSPlugin extends KubeJSPlugin {
 
     @Override
     public void registerBindings(BindingsEvent event) {
-        if(event.getType().isStartup()) {
+        if(event.getType().isServer()) {
             event.add("EventBuilder", EventBuilder.class);
             event.add("EventFunctionBuilder", EventFunctionBuilder.class);
             event.add("EventCustomFunctionBuilder", EventCustomFunctionBuilder.class);

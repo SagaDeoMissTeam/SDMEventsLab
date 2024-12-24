@@ -50,6 +50,8 @@ public class EventFunction {
     public void onPlayerItemPickupEvent(PlayerEvent.ItemPickupEvent event) {}
     public void onBlockBreakEvent(BlockEvent.BreakEvent event) {}
     public void onLivingEntityTickEvent(LivingEvent.LivingTickEvent event) {}
+    public void onBlockInteractEvent(PlayerInteractEvent.RightClickBlock event) {}
+    public void onBlockAttackEvent(PlayerInteractEvent.LeftClickBlock event) {}
 
     public void applyEffectPlayer(ServerPlayer player) {}
 
