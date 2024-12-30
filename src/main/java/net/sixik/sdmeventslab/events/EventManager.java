@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.sixik.sdmeventslab.events.conditions.EventCondition;
+import net.sixik.sdmeventslab.events.endConditions.EventEndCondition;
 import net.sixik.sdmeventslab.register.EventsRegisters;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.UUID;
 public class EventManager {
     public static final EventManager INSTANCE = new EventManager();
     public List<EventBase> mayStarted = new ArrayList<>();
+    public List<EventBase> activeGlobalEvents = new ArrayList<>();
     public HashMap<UUID,List<ResourceLocation>> activeOnPlayer = new HashMap<>();
 
     public void checkProperties(MinecraftServer server){
@@ -38,12 +40,17 @@ public class EventManager {
             }
 
             if (checkPoint == e.properties.whiteList.size()) {
+
                 mayStarted.add(e);
+
             };
 
             if (e.eventSide == EventBase.EventSide.LOCAL){
+
                 for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+
                     boolean isBreak = false;
+
                     for (EventCondition c : e.conditions2) {
 
                         if(!c.canExecuteLocal(player)) {
@@ -52,28 +59,78 @@ public class EventManager {
                         };
 
                     }
+
                     if(!isBreak && mayStarted.contains(e)) {
+
                         e.onEventStart(server);
+
                         if(!activeOnPlayer.containsKey(player.getGameProfile().getId()))
                             activeOnPlayer.put(player.getGameProfile().getId(),new ArrayList<>());
+
                         activeOnPlayer.get(player.getGameProfile().getId()).add(e.eventID);
+                        activeGlobalEvents.add(e);
+
+                    }
+
+                    for (EventEndCondition end : e.getEndConditions()) {
+
+                       if (end.canEndLocal(player)) {
+
+                           e.onEventEnd(server);
+
+                           if (activeOnPlayer.containsKey(player.getGameProfile().getId()))
+                               activeOnPlayer.get(player.getGameProfile().getId()).remove(e.eventID);
+
+                           activeGlobalEvents.remove(e);
+                       }
+
                     }
 
                 }
+
             }else{
                     boolean isBreak = false;
+
                     for (EventCondition c : e.conditions2) {
+
                        if(!c.canExecuteGlobal(server)) {
+
                            isBreak = true;
                            break;
+
                        };
 
                     }
-                    if(!isBreak && mayStarted.contains(e)) e.onEventStart(server);
-                    for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-                        if(!activeOnPlayer.containsKey(player.getGameProfile().getId()))
-                            activeOnPlayer.put(player.getGameProfile().getId(),new ArrayList<>());
-                        activeOnPlayer.get(player.getGameProfile().getId()).add(e.eventID);
+
+                    if(!isBreak && mayStarted.contains(e)) {
+
+                        e.onEventStart(server);
+
+                        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+
+                            if (!activeOnPlayer.containsKey(player.getGameProfile().getId()))
+                                activeOnPlayer.put(player.getGameProfile().getId(), new ArrayList<>());
+
+                            activeOnPlayer.get(player.getGameProfile().getId()).add(e.eventID);
+                            activeGlobalEvents.add(e);
+                        }
+                    }
+
+                    for (EventEndCondition end : e.getEndConditions()) {
+
+                        if (end.canEndGlobal(server)) {
+
+                            e.onEventEnd(server);
+
+                            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+
+                                if (activeOnPlayer.containsKey(player.getGameProfile().getId()))
+                                    activeOnPlayer.get(player.getGameProfile().getId()).remove(e.eventID);
+
+                                activeGlobalEvents.remove(e);
+                            }
+
+                        }
                     }
             }
 
